@@ -196,7 +196,6 @@
             font-size: 1.2rem;
             transition: all 0.3s ease;
             padding: 5px;
-            z-index: 1001;
         }
 
         .theme-toggle:hover {
@@ -379,18 +378,6 @@
         
         .timeline-item:nth-child(even)::after {
             left: -10px;
-        }
-        
-        .promotion-item {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .promotion-item:first-child {
-            margin-top: 0;
-            padding-top: 0;
-            border-top: none;
         }
         
         /* Projects Section */
@@ -609,6 +596,81 @@
             font-size: 0.9rem;
         }
         
+        /* Enhanced mobile menu styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--header-bg);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                z-index: 1001;
+                border-top: 1px solid var(--border-color);
+            }
+            
+            .nav-links.active {
+                display: flex;
+                animation: slideDown 0.3s ease;
+            }
+            
+            .nav-links li {
+                margin: 0;
+                width: 100%;
+                text-align: left;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+            
+            .nav-links a {
+                display: block;
+                width: 100%;
+                padding: 8px 0;
+                font-size: 1.1rem;
+            }
+
+            .nav-controls {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                background: none;
+                border: 1px solid var(--border-color);
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .menu-toggle:hover {
+                background-color: var(--border-color);
+            }
+            
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links {
@@ -632,6 +694,10 @@
                 margin: 10px 0;
                 width: 100%;
                 text-align: center;
+            }
+
+            .nav-links .theme-toggle {
+                display: none;
             }
             
             .menu-toggle {
@@ -782,7 +848,7 @@
                     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <button class="menu-toggle" id="menuToggle">
+                    <button class="menu-toggle">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
@@ -812,7 +878,7 @@
                     <a href="#contact" class="btn">Contact Me</a>
                 </div>
                 <div class="about-image">
-                    <img src="abhinav-photo.jpg" alt="Abhinav M R" class="profile-img">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Abhinav M R" class="profile-img">
                 </div>
             </div>
         </div>
@@ -867,23 +933,29 @@
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-content">
-                        <h3>Tata Consultancy Services</h3>
-                        <h4>Kochi, India</h4>
-                        <div class="promotion-item">
-                            <div class="timeline-date">09/2025 - Present</div>
-                            <h4>System Engineer</h4>
-                            <p>Currently working as DevOps Engineer at TCS in a utilities project developing Jenkins pipeline as per the requirement.</p>
-                        </div>
-                        <div class="promotion-item">
-                            <div class="timeline-date">11/2024 - 08/2025</div>
-                            <h4>Assistant System Engineer</h4>
-                            <p>Worked as DevOps Engineer developing and maintaining CI/CD pipelines for utilities projects.</p>
-                        </div>
-                        <div class="promotion-item">
-                            <div class="timeline-date">11/2023 - 10/2024</div>
-                            <h4>Assistant System Engineer Trainee</h4>
-                            <p>Started career as DevOps Engineer trainee, learning and implementing CI/CD processes.</p>
-                        </div>
+                        <div class="timeline-date">09/2025 - Present</div>
+                        <h3>System Engineer</h3>
+                        <h4>Tata Consultancy Services</h4>
+                        <p>Kochi, India</p>
+                        <p>Currently working as DevOps Engineer at TCS in a utilities project developing Jenkins pipeline as per the requirement.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">11/2024 - 08/2025</div>
+                        <h3>Assistant System Engineer</h3>
+                        <h4>Tata Consultancy Services</h4>
+                        <p>Kochi, India</p>
+                        <p>Worked as DevOps Engineer developing and maintaining CI/CD pipelines for utilities projects.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">11/2023 - 10/2024</div>
+                        <h3>Assistant System Engineer Trainee</h3>
+                        <h4>Tata Consultancy Services</h4>
+                        <p>Kochi, India</p>
+                        <p>Started career as DevOps Engineer trainee, learning and implementing CI/CD processes.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
@@ -1091,17 +1163,47 @@
     </footer>
 
     <script>
-        // Mobile menu toggle - Fixed with proper ID
-        document.getElementById('menuToggle').addEventListener('click', function() {
+        // Mobile menu toggle - Fixed version
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
             const navLinks = document.querySelector('.nav-links');
-            navLinks.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking on a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-links').classList.remove('active');
-            });
+            
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navLinks.classList.toggle('active');
+                    
+                    // Change icon based on menu state
+                    const icon = this.querySelector('i');
+                    if (navLinks.classList.contains('active')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+                
+                // Close mobile menu when clicking on a link
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    });
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.nav-links') && !e.target.closest('.menu-toggle')) {
+                        navLinks.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
         });
         
         // Enhanced Mailto Functionality for Contact Form

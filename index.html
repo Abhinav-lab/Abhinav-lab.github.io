@@ -49,10 +49,11 @@
             color: var(--text-color);
             line-height: 1.6;
             transition: all 0.3s ease;
+            overflow-x: hidden;
         }
         
         .container {
-            width: 90%;
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
@@ -143,7 +144,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 0;
-            position: relative;
         }
         
         .logo {
@@ -178,9 +178,6 @@
             cursor: pointer;
             font-size: 1.5rem;
             color: var(--text-color);
-            background: none;
-            border: none;
-            z-index: 1002;
         }
 
         /* Dark Mode Toggle */
@@ -190,19 +187,13 @@
             color: var(--text-color);
             cursor: pointer;
             font-size: 1.2rem;
+            margin-left: 20px;
             transition: all 0.3s ease;
-            padding: 5px;
         }
 
         .theme-toggle:hover {
             color: var(--primary);
             transform: rotate(30deg);
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
         
         /* Hero Section */
@@ -592,81 +583,6 @@
             font-size: 0.9rem;
         }
         
-        /* Enhanced mobile menu styles */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--header-bg);
-                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-                padding: 20px;
-                z-index: 1001;
-                border-top: 1px solid var(--border-color);
-            }
-            
-            .nav-links.active {
-                display: flex;
-                animation: slideDown 0.3s ease;
-            }
-            
-            .nav-links li {
-                margin: 0;
-                width: 100%;
-                text-align: left;
-                padding: 12px 0;
-                border-bottom: 1px solid var(--border-color);
-            }
-            
-            .nav-links li:last-child {
-                border-bottom: none;
-            }
-            
-            .nav-links a {
-                display: block;
-                width: 100%;
-                padding: 8px 0;
-                font-size: 1.1rem;
-            }
-
-            .nav-controls {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-            }
-            
-            .menu-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 40px;
-                height: 40px;
-                background: none;
-                border: 1px solid var(--border-color);
-                border-radius: 5px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            
-            .menu-toggle:hover {
-                background-color: var(--border-color);
-            }
-            
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        }
-        
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links {
@@ -679,7 +595,6 @@
                 background-color: var(--header-bg);
                 box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
                 padding: 20px;
-                z-index: 1001;
             }
             
             .nav-links.active {
@@ -688,22 +603,14 @@
             
             .nav-links li {
                 margin: 10px 0;
-                width: 100%;
-                text-align: center;
-            }
-
-            .nav-links .theme-toggle {
-                display: none;
             }
             
             .menu-toggle {
                 display: block;
             }
 
-            .nav-controls {
-                display: flex;
-                align-items: center;
-                gap: 15px;
+            .theme-toggle {
+                margin-left: 15px;
             }
             
             .hero h1 {
@@ -712,13 +619,11 @@
             
             .hero p {
                 font-size: 1.1rem;
-                padding: 0 10px;
             }
             
             .about-content {
                 grid-template-columns: 1fr;
                 text-align: center;
-                gap: 30px;
             }
             
             .profile-img {
@@ -753,25 +658,11 @@
             .contact-container {
                 gap: 30px;
             }
-
-            /* Fix for mobile desktop mode spacing */
-            section {
-                padding: 60px 0;
-            }
-
-            .container {
-                width: 95%;
-                padding: 0 15px;
-            }
-
-            .hero {
-                padding: 120px 0 80px;
-            }
         }
         
         @media (max-width: 480px) {
             .hero {
-                padding: 100px 0 60px;
+                padding: 120px 0 80px;
             }
             
             .hero h1 {
@@ -779,48 +670,15 @@
             }
             
             section {
-                padding: 50px 0;
+                padding: 60px 0;
             }
             
             h2 {
                 font-size: 1.75rem;
             }
-
-            .container {
-                width: 100%;
-                padding: 0 20px;
-            }
-
-            .nav-controls {
-                gap: 10px;
-            }
-        }
-
-        /* Fix for mobile browsers in desktop mode */
-        @media (max-width: 1024px) and (orientation: landscape) {
-            .container {
-                width: 95%;
-                max-width: none;
-            }
-            
-            section {
-                padding: 60px 0;
-            }
-            
-            .hero {
-                padding: 120px 0 80px;
-            }
-        }
-
-        /* Prevent horizontal scroll on mobile */
-        @media (max-width: 768px) {
-            body {
-                overflow-x: hidden;
-                width: 100%;
-            }
             
             .container {
-                overflow-x: hidden;
+                padding: 0 15px;
             }
         }
     </style>
@@ -839,14 +697,14 @@
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#education">Education</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <li>
+                        <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
                 </ul>
-                <div class="nav-controls">
-                    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="menu-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
                 </div>
             </nav>
         </div>
@@ -874,7 +732,7 @@
                     <a href="#contact" class="btn">Contact Me</a>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Abhinav M R" class="profile-img">
+                    <img src="abhinav-photo.jpg" alt="Abhinav M R" class="profile-img">
                 </div>
             </div>
         </div>
@@ -1141,47 +999,16 @@
     </footer>
 
     <script>
-        // Mobile menu toggle - Fixed version
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.menu-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            
-            if (menuToggle && navLinks) {
-                menuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navLinks.classList.toggle('active');
-                    
-                    // Change icon based on menu state
-                    const icon = this.querySelector('i');
-                    if (navLinks.classList.contains('active')) {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-times');
-                    } else {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                });
-                
-                // Close mobile menu when clicking on a link
-                document.querySelectorAll('.nav-links a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        navLinks.classList.remove('active');
-                        const icon = menuToggle.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    });
-                });
-                
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.nav-links') && !e.target.closest('.menu-toggle')) {
-                        navLinks.classList.remove('active');
-                        const icon = menuToggle.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                });
-            }
+        // Mobile menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-links').classList.remove('active');
+            });
         });
         
         // Enhanced Mailto Functionality for Contact Form
@@ -1222,11 +1049,23 @@
             });
         });
 
-        // Dark Mode Toggle Function
-        function toggleDarkMode() {
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // Check for saved theme preference or prefer OS theme
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const currentTheme = localStorage.getItem('theme');
+        
+        if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        
+        themeToggle.addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
             
-            const themeIcon = document.querySelector('#themeToggle i');
             if (document.body.classList.contains('dark-mode')) {
                 themeIcon.classList.remove('fa-moon');
                 themeIcon.classList.add('fa-sun');
@@ -1236,31 +1075,7 @@
                 themeIcon.classList.add('fa-moon');
                 localStorage.setItem('theme', 'light');
             }
-        }
-
-        // Initialize Dark Mode
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-        const currentTheme = localStorage.getItem('theme');
-        
-        if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
-            document.body.classList.add('dark-mode');
-            const themeIcon = document.querySelector('#themeToggle i');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        }
-        
-        // Add event listener to theme toggle
-        document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
-
-        // Fix for mobile viewport issues
-        function setViewportHeight() {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-
-        setViewportHeight();
-        window.addEventListener('resize', setViewportHeight);
-        window.addEventListener('orientationchange', setViewportHeight);
+        });
     </script>
 </body>
 </html>

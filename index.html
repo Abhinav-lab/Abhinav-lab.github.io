@@ -184,6 +184,7 @@
             color: var(--text-color);
             background: none;
             border: none;
+            z-index: 1002;
         }
 
         /* Dark Mode Toggle */
@@ -195,6 +196,7 @@
             font-size: 1.2rem;
             transition: all 0.3s ease;
             padding: 5px;
+            z-index: 1001;
         }
 
         .theme-toggle:hover {
@@ -377,6 +379,18 @@
         
         .timeline-item:nth-child(even)::after {
             left: -10px;
+        }
+        
+        .promotion-item {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .promotion-item:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
         }
         
         /* Projects Section */
@@ -619,10 +633,6 @@
                 width: 100%;
                 text-align: center;
             }
-
-            .nav-links .theme-toggle {
-                display: none;
-            }
             
             .menu-toggle {
                 display: block;
@@ -772,7 +782,7 @@
                     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <button class="menu-toggle">
+                    <button class="menu-toggle" id="menuToggle">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
@@ -857,29 +867,23 @@
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-content">
-                        <div class="timeline-date">09/2025 - Present</div>
-                        <h3>System Engineer</h3>
-                        <h4>Tata Consultancy Services</h4>
-                        <p>Kochi, India</p>
-                        <p>Currently working as DevOps Engineer at TCS in a utilities project developing Jenkins pipeline as per the requirement.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">11/2024 - 08/2025</div>
-                        <h3>Assistant System Engineer</h3>
-                        <h4>Tata Consultancy Services</h4>
-                        <p>Kochi, India</p>
-                        <p>Worked as DevOps Engineer developing and maintaining CI/CD pipelines for utilities projects.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">11/2023 - 10/2024</div>
-                        <h3>Assistant System Engineer Trainee</h3>
-                        <h4>Tata Consultancy Services</h4>
-                        <p>Kochi, India</p>
-                        <p>Started career as DevOps Engineer trainee, learning and implementing CI/CD processes.</p>
+                        <h3>Tata Consultancy Services</h3>
+                        <h4>Kochi, India</h4>
+                        <div class="promotion-item">
+                            <div class="timeline-date">09/2025 - Present</div>
+                            <h4>System Engineer</h4>
+                            <p>Currently working as DevOps Engineer at TCS in a utilities project developing Jenkins pipeline as per the requirement.</p>
+                        </div>
+                        <div class="promotion-item">
+                            <div class="timeline-date">11/2024 - 08/2025</div>
+                            <h4>Assistant System Engineer</h4>
+                            <p>Worked as DevOps Engineer developing and maintaining CI/CD pipelines for utilities projects.</p>
+                        </div>
+                        <div class="promotion-item">
+                            <div class="timeline-date">11/2023 - 10/2024</div>
+                            <h4>Assistant System Engineer Trainee</h4>
+                            <p>Started career as DevOps Engineer trainee, learning and implementing CI/CD processes.</p>
+                        </div>
                     </div>
                 </div>
                 <div class="timeline-item">
@@ -1087,8 +1091,8 @@
     </footer>
 
     <script>
-        // Mobile menu toggle - Fixed version
-        document.querySelector('.menu-toggle').addEventListener('click', function() {
+        // Mobile menu toggle - Fixed with proper ID
+        document.getElementById('menuToggle').addEventListener('click', function() {
             const navLinks = document.querySelector('.nav-links');
             navLinks.classList.toggle('active');
         });

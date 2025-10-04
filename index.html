@@ -1286,18 +1286,55 @@
         });
         
         // Form submission (for demo purposes)
-        document.getElementById('sendEmail').addEventListener('click', function() {
+        // document.getElementById('sendEmail').addEventListener('click', function() {
+        //     const name = document.getElementById('name').value;
+        //     const email = document.getElementById('email').value;
+        //     const subject = document.getElementById('subject').value;
+        //     const message = document.getElementById('message').value;
+            
+        //     if (name && email && subject && message) {
+        //         alert(`Thank you, ${name}! Your message has been sent. I'll get back to you soon.`);
+        //         document.getElementById('contactForm').reset();
+        //     } else {
+        //         alert('Please fill in all fields before sending.');
+        //     }
+        // });
+
+		document.getElementById('sendEmail').addEventListener('click', function() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const subject = document.getElementById('subject').value;
             const message = document.getElementById('message').value;
             
-            if (name && email && subject && message) {
-                alert(`Thank you, ${name}! Your message has been sent. I'll get back to you soon.`);
-                document.getElementById('contactForm').reset();
-            } else {
+            // Validate form
+            if (!name || !email || !subject || !message) {
                 alert('Please fill in all fields before sending.');
+                return;
             }
+            
+            // Create email body with proper formatting
+            const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            
+            // Create mailto link
+            const mailtoLink = `mailto:abhinavmr2001@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+        });
+
+        // Form validation styling
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.style.borderColor = '#ff6b6b';
+                } else {
+                    this.style.borderColor = 'var(--border-color)';
+                }
+            });
+            
+            input.addEventListener('focus', function() {
+                this.style.borderColor = '#2563eb';
+            });
         });
         
         // Animation on scroll (simple implementation)

@@ -90,6 +90,17 @@
             height: 4px;
             background-color: var(--primary);
         }
+
+/* Phone number link styling */
+.phone-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.phone-link:hover {
+    color: var(--primary);
+}
         
         p {
             margin-bottom: 1rem;
@@ -1137,7 +1148,7 @@
                         <i class="fas fa-phone"></i>
                         <div>
                             <h3>Phone</h3>
-                            <p>8547115329</p>
+                            <p><a href="tel:+918547115329" class="phone-link">8547115329</a></p>
                         </div>
                     </div>
                  <!--   <div class="contact-item">
@@ -1204,7 +1215,7 @@
                     <h3>Contact Info</h3>
                     <p><i class="fas fa-map-marker-alt"></i> 670612 Kannur, India</p>
                     <p><i class="fas fa-envelope"></i> abhinavmr2001@gmail.com</p>
-                    <p><i class="fas fa-phone"></i> 8547115329</p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+918547115329" class="phone-link">8547115329</a></p>
                 </div>
             </div>
             <div class="copyright">
@@ -1566,6 +1577,19 @@ document.querySelectorAll('.form-control').forEach(input => {
 
 
 		//////////////////////////////////
+
+// Phone number click handler for additional functionality
+document.querySelectorAll('.phone-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        // Optional: Add analytics or tracking here
+        console.log('Phone number clicked: ', this.textContent);
+        
+        // Optional: Show a confirmation message
+        setTimeout(() => {
+            alert('Opening phone app to call ' + this.textContent);
+        }, 100);
+    });
+});
         
         // Animation on scroll (simple implementation)
         const animateOnScroll = () => {

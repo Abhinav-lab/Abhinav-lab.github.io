@@ -50,17 +50,19 @@
             line-height: 1.6;
             transition: all 0.3s ease;
             overflow-x: hidden;
+            width: 100%;
         }
         
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
         
         section {
             padding: 80px 0;
+            width: 100%;
         }
         
         h1, h2, h3, h4 {
@@ -203,6 +205,11 @@
             padding: 150px 0 100px;
             text-align: center;
             margin-top: 0;
+            width: 100%;
+        }
+        
+        .hero .container {
+            max-width: 800px;
         }
         
         .hero h1 {
@@ -213,9 +220,9 @@
         
         .hero p {
             font-size: 1.2rem;
-            max-width: 700px;
             margin: 0 auto 2rem;
             color: rgba(255, 255, 255, 0.9);
+            max-width: 100%;
         }
         
         .hero .btn {
@@ -519,6 +526,7 @@
             background-color: var(--dark);
             color: white;
             padding: 50px 0 20px;
+            width: 100%;
         }
         
         .footer-content {
@@ -613,6 +621,10 @@
                 margin-left: 15px;
             }
             
+            .hero {
+                padding: 120px 0 80px;
+            }
+            
             .hero h1 {
                 font-size: 2.5rem;
             }
@@ -658,11 +670,15 @@
             .contact-container {
                 gap: 30px;
             }
+            
+            .container {
+                padding: 0 15px;
+            }
         }
         
         @media (max-width: 480px) {
             .hero {
-                padding: 120px 0 80px;
+                padding: 100px 0 60px;
             }
             
             .hero h1 {
@@ -678,7 +694,32 @@
             }
             
             .container {
-                padding: 0 15px;
+                padding: 0 10px;
+            }
+            
+            .hero .container,
+            .about-content .container,
+            .skills-container .container,
+            .timeline .container,
+            .projects-grid .container,
+            .education-container .container,
+            .contact-container .container,
+            .footer-content .container {
+                padding: 0 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 0 8px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
             }
         }
     </style>

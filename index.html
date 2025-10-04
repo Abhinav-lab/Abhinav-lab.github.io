@@ -1338,6 +1338,93 @@
   //       });
 		// /////////////////////////////////////////
 
+// 		document.getElementById('sendEmail').addEventListener('click', function() {
+//     const name = document.getElementById('name').value;
+//     const email = document.getElementById('email').value;
+//     const subject = document.getElementById('subject').value;
+//     const message = document.getElementById('message').value;
+    
+//     // Validate form fields are not empty
+//     if (!name || !email || !subject || !message) {
+//         alert('Please fill in all fields before sending.');
+//         highlightEmptyFields();
+//         return;
+//     }
+    
+//     // Validate email format
+//     if (!isValidEmail(email)) {
+//         alert('Please enter a valid email address.');
+//         document.getElementById('email').style.borderColor = '#ff6b6b';
+//         return;
+//     }
+    
+//     // Create email body with proper formatting
+//     const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+    
+//     // Create mailto link
+//     const mailtoLink = `mailto:abhinavmr2001@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+    
+//     // Open email client
+//     window.location.href = mailtoLink;
+// });
+
+// // Email validation function
+// function isValidEmail(email) {
+//     // Basic email regex pattern
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     return emailRegex.test(email);
+// }
+
+// // Function to highlight empty fields
+// function highlightEmptyFields() {
+//     const fields = ['name', 'email', 'subject', 'message'];
+//     fields.forEach(fieldId => {
+//         const field = document.getElementById(fieldId);
+//         if (!field.value) {
+//             field.style.borderColor = '#ff6b6b';
+//         }
+//     });
+// }
+
+// // Form validation styling
+// document.querySelectorAll('.form-control').forEach(input => {
+//     input.addEventListener('blur', function() {
+//         if (!this.value) {
+//             this.style.borderColor = '#ff6b6b';
+//         } else {
+//             // Special validation for email field
+//             if (this.type === 'email' || this.id === 'email') {
+//                 if (!isValidEmail(this.value)) {
+//                     this.style.borderColor = '#ff6b6b';
+//                 } else {
+//                     this.style.borderColor = '#22c55e'; // Green for valid email
+//                 }
+//             } else {
+//                 this.style.borderColor = 'var(--border-color)';
+//             }
+//         }
+//     });
+    
+//     input.addEventListener('focus', function() {
+//         this.style.borderColor = '#2563eb';
+//     });
+    
+//     // Real-time email validation as user types
+//     if (input.type === 'email' || input.id === 'email') {
+//         input.addEventListener('input', function() {
+//             if (this.value) {
+//                 if (!isValidEmail(this.value)) {
+//                     this.style.borderColor = '#ff6b6b';
+//                 } else {
+//                     this.style.borderColor = '#22c55e'; // Green for valid email
+//                 }
+//             } else {
+//                 this.style.borderColor = 'var(--border-color)';
+//             }
+//         });
+//     }
+// });
+
 		document.getElementById('sendEmail').addEventListener('click', function() {
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -1353,8 +1440,7 @@
     
     // Validate email format
     if (!isValidEmail(email)) {
-        alert('Please enter a valid email address.');
-        document.getElementById('email').style.borderColor = '#ff6b6b';
+        showEmailError('Please enter a valid email address.');
         return;
     }
     
@@ -1370,9 +1456,37 @@
 
 // Email validation function
 function isValidEmail(email) {
-    // Basic email regex pattern
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+}
+
+// Function to show email error message
+function showEmailError(message) {
+    const emailField = document.getElementById('email');
+    const existingError = emailField.parentNode.querySelector('.email-error');
+    
+    if (existingError) {
+        existingError.textContent = message;
+    } else {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'email-error';
+        errorElement.style.color = '#ff6b6b';
+        errorElement.style.fontSize = '0.8rem';
+        errorElement.style.marginTop = '5px';
+        errorElement.textContent = message;
+        emailField.parentNode.appendChild(errorElement);
+    }
+    
+    emailField.style.borderColor = '#ff6b6b';
+}
+
+// Function to remove email error message
+function removeEmailError() {
+    const emailField = document.getElementById('email');
+    const existingError = emailField.parentNode.querySelector('.email-error');
+    if (existingError) {
+        existingError.remove();
+    }
 }
 
 // Function to highlight empty fields
@@ -1396,8 +1510,10 @@ document.querySelectorAll('.form-control').forEach(input => {
             if (this.type === 'email' || this.id === 'email') {
                 if (!isValidEmail(this.value)) {
                     this.style.borderColor = '#ff6b6b';
+                    showEmailError('Please enter a valid email address.');
                 } else {
                     this.style.borderColor = '#22c55e'; // Green for valid email
+                    removeEmailError();
                 }
             } else {
                 this.style.borderColor = 'var(--border-color)';
@@ -1407,11 +1523,17 @@ document.querySelectorAll('.form-control').forEach(input => {
     
     input.addEventListener('focus', function() {
         this.style.borderColor = '#2563eb';
+        // Remove error message when user focuses on email field
+        if (this.type === 'email' || this.id === 'email') {
+            removeEmailError();
+        }
     });
     
     // Real-time email validation as user types
     if (input.type === 'email' || input.id === 'email') {
         input.addEventListener('input', function() {
+            removeEmailError(); // Remove error message when user starts typing
+            
             if (this.value) {
                 if (!isValidEmail(this.value)) {
                     this.style.borderColor = '#ff6b6b';
@@ -1422,8 +1544,18 @@ document.querySelectorAll('.form-control').forEach(input => {
                 this.style.borderColor = 'var(--border-color)';
             }
         });
+        
+        // Validate email when user leaves the field (blur)
+        input.addEventListener('blur', function() {
+            if (this.value && !isValidEmail(this.value)) {
+                showEmailError('Please enter a valid email address.');
+            }
+        });
     }
 });
+
+
+		//////////////////////////////////
         
         // Animation on scroll (simple implementation)
         const animateOnScroll = () => {

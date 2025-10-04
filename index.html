@@ -1299,43 +1299,131 @@
         //         alert('Please fill in all fields before sending.');
         //     }
         // });
+//  ////////////////////////////////////////////////////////
+		// document.getElementById('sendEmail').addEventListener('click', function() {
+  //           const name = document.getElementById('name').value;
+  //           const email = document.getElementById('email').value;
+  //           const subject = document.getElementById('subject').value;
+  //           const message = document.getElementById('message').value;
+            
+  //           // Validate form
+  //           if (!name || !email || !subject || !message) {
+  //               alert('Please fill in all fields before sending.');
+  //               return;
+  //           }
+            
+  //           // Create email body with proper formatting
+  //           const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            
+  //           // Create mailto link
+  //           const mailtoLink = `mailto:abhinavmr2001@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+            
+  //           // Open email client
+  //           window.location.href = mailtoLink;
+  //       });
+
+  //       // Form validation styling
+  //       document.querySelectorAll('.form-control').forEach(input => {
+  //           input.addEventListener('blur', function() {
+  //               if (!this.value) {
+  //                   this.style.borderColor = '#ff6b6b';
+  //               } else {
+  //                   this.style.borderColor = 'var(--border-color)';
+  //               }
+  //           });
+            
+  //           input.addEventListener('focus', function() {
+  //               this.style.borderColor = '#2563eb';
+  //           });
+  //       });
+		// /////////////////////////////////////////
 
 		document.getElementById('sendEmail').addEventListener('click', function() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            
-            // Validate form
-            if (!name || !email || !subject || !message) {
-                alert('Please fill in all fields before sending.');
-                return;
-            }
-            
-            // Create email body with proper formatting
-            const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
-            
-            // Create mailto link
-            const mailtoLink = `mailto:abhinavmr2001@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
-            
-            // Open email client
-            window.location.href = mailtoLink;
-        });
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    
+    // Validate form fields are not empty
+    if (!name || !email || !subject || !message) {
+        alert('Please fill in all fields before sending.');
+        highlightEmptyFields();
+        return;
+    }
+    
+    // Validate email format
+    if (!isValidEmail(email)) {
+        alert('Please enter a valid email address.');
+        document.getElementById('email').style.borderColor = '#ff6b6b';
+        return;
+    }
+    
+    // Create email body with proper formatting
+    const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+    
+    // Create mailto link
+    const mailtoLink = `mailto:abhinavmr2001@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+});
 
-        // Form validation styling
-        document.querySelectorAll('.form-control').forEach(input => {
-            input.addEventListener('blur', function() {
-                if (!this.value) {
+// Email validation function
+function isValidEmail(email) {
+    // Basic email regex pattern
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Function to highlight empty fields
+function highlightEmptyFields() {
+    const fields = ['name', 'email', 'subject', 'message'];
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value) {
+            field.style.borderColor = '#ff6b6b';
+        }
+    });
+}
+
+// Form validation styling
+document.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('blur', function() {
+        if (!this.value) {
+            this.style.borderColor = '#ff6b6b';
+        } else {
+            // Special validation for email field
+            if (this.type === 'email' || this.id === 'email') {
+                if (!isValidEmail(this.value)) {
                     this.style.borderColor = '#ff6b6b';
                 } else {
-                    this.style.borderColor = 'var(--border-color)';
+                    this.style.borderColor = '#22c55e'; // Green for valid email
                 }
-            });
-            
-            input.addEventListener('focus', function() {
-                this.style.borderColor = '#2563eb';
-            });
+            } else {
+                this.style.borderColor = 'var(--border-color)';
+            }
+        }
+    });
+    
+    input.addEventListener('focus', function() {
+        this.style.borderColor = '#2563eb';
+    });
+    
+    // Real-time email validation as user types
+    if (input.type === 'email' || input.id === 'email') {
+        input.addEventListener('input', function() {
+            if (this.value) {
+                if (!isValidEmail(this.value)) {
+                    this.style.borderColor = '#ff6b6b';
+                } else {
+                    this.style.borderColor = '#22c55e'; // Green for valid email
+                }
+            } else {
+                this.style.borderColor = 'var(--border-color)';
+            }
         });
+    }
+});
         
         // Animation on scroll (simple implementation)
         const animateOnScroll = () => {

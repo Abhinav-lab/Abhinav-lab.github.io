@@ -113,11 +113,24 @@
     color: var(--primary);
 }
 
-		.promotion-item {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
+.typing-text {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    min-height: 2rem;
+    display: inline-block;
+}
+
+.typing-text::after {
+    content: '|';
+    animation: blink 1s infinite;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
         
         .promotion-item:first-child {
             margin-top: 0;
@@ -659,6 +672,10 @@
                 max-width: 720px;
                 padding: 0 15px;
             }
+
+           .typing-text {
+        font-size: 1.2rem;
+    }
             
             section {
                 padding: 60px 0;
@@ -697,7 +714,7 @@
             .nav-buttons {
                 display: flex;
                 align-items: center;
-		gap: 15px;
+		gap: 25px;
             }
             
             /* Hero Section */
@@ -771,6 +788,10 @@
                 padding: 0 15px;
             }
             
+    .typing-text {
+        font-size: 1.1rem;
+    }
+
             section {
                 padding: 50px 0;
             }
@@ -861,7 +882,7 @@
             }
 
 	    .nav-buttons {
-        	gap: 10px; /* Smaller gap for very small screens */
+        	gap: 20px; /* Smaller gap for very small screens */
     	    }
             
             .hero h1 {
@@ -963,7 +984,8 @@
     <section id="home" class="hero">
         <div class="container">
             <h1>Abhinav M R</h1>
-            <p>DevOps Engineer | Problem Solver | Creative Thinker</p>
+	    <div class="typing-text" id="typing-text"></div>
+            <!-- <p>DevOps Engineer | Problem Solver | Creative Thinker</p> -->
             <p>I am a B.Tech graduate currently working as a DevOps Engineer at TCS. I am seeking opportunities to further enhance my professional skill set, leveraging my excellent problem-solving abilities and strong teamwork skills.</p>
             <a href="#contact" class="btn">Get In Touch</a>
         </div>
@@ -1270,6 +1292,44 @@
     </footer>
 
     <script>
+
+// Typing effect
+const texts = ["DevOps Engineer", "Cloud Enthusiast", "Problem Solver", "Creative Thinker"];
+let currentText = 0;
+let currentChar = 0;
+let isDeleting = false;
+const typingElement = document.getElementById('typing-text');
+
+function typeEffect() {
+    const current = texts[currentText];
+    
+    if (isDeleting) {
+        typingElement.textContent = current.substring(0, currentChar - 1);
+        currentChar--;
+    } else {
+        typingElement.textContent = current.substring(0, currentChar + 1);
+        currentChar++;
+    }
+
+    let speed = isDeleting ? 30 : 40;
+
+    if (!isDeleting && currentChar === current.length) {
+        speed = 1000; // Pause at the end of typing
+        isDeleting = true;
+    } else if (isDeleting && currentChar === 0) {
+        isDeleting = false;
+        currentText = (currentText + 1) % texts.length;
+        speed = 350; // Pause before starting next text
+    }
+
+    setTimeout(typeEffect, speed);
+}
+
+// Start the typing effect when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure everything is loaded
+    setTimeout(typeEffect, 1000);
+});
         // Mobile Menu Toggle
         const menuToggle = document.querySelector('.menu-toggle');
         const navLinks = document.querySelector('.nav-links');

@@ -102,6 +102,17 @@
     color: var(--primary);
 }
 
+		/* Email link styling */
+.email-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.email-link:hover {
+    color: var(--primary);
+}
+
 		.promotion-item {
             margin-top: 15px;
             padding-top: 15px;
@@ -1171,10 +1182,10 @@
                         </div>
                     </div>
                     <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:abhinavmr2001@gmail.com" class="email-link"><i class="fas fa-envelope"></i></a>
                         <div>
-                            <h3><a href="mailto:abhinavmr2001@gmail.com">Email</a></h3>
-                            <p><a href="mailto:abhinavmr2001@gmail.com">abhinavmr2001@gmail.com</a></p>
+                            <h3><a href="mailto:abhinavmr2001@gmail.com" class="email-link">Email</a></h3>
+                            <p><a href="mailto:abhinavmr2001@gmail.com" class="email-link">abhinavmr2001@gmail.com</a></p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -1247,7 +1258,7 @@
                 <div class="footer-contact">
                     <h3>Contact Info</h3>
                     <p><i class="fas fa-map-marker-alt"></i> 670612 Kannur, India</p>
-                    <p><i class="fas fa-envelope"></i><a href="mailto:abhinavmr2001@gmail.com"> abhinavmr2001@gmail.com</a></p>
+                    <p><i class="fas fa-envelope"></i><a href="mailto:abhinavmr2001@gmail.com" class="email-link"> abhinavmr2001@gmail.com</a></p>
                     <p><i class="fas fa-phone"></i><a href="tel:+918547115329" class="phone-link">8547115329</a></p>
                 </div>
             </div>
@@ -1265,6 +1276,14 @@
         menuToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
+
+		// Email link click functionality
+document.querySelectorAll('.email-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        console.log('Email address clicked: ', this.textContent);
+        // The mailto: link will automatically open the email app
+    });
+});
         
         // Close mobile menu when clicking on a link
         document.querySelectorAll('.nav-links a').forEach(link => {

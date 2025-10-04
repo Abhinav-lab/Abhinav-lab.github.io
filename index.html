@@ -1228,6 +1228,16 @@
                 navLinks.classList.remove('active');
             });
         });
+
+		 // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.nav-links') && !e.target.closest('.menu-toggle')) {
+                        navLinks.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
         
         // Dark Mode Toggle
         const themeToggle = document.getElementById('themeToggle');

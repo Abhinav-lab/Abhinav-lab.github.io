@@ -80,10 +80,16 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .upload-area:hover {
             background-color: #f0f8ff;
+        }
+
+        .upload-area.dragover {
+            background-color: #e1f0fa;
+            border-color: #2980b9;
         }
 
         .upload-icon {
@@ -312,6 +318,25 @@
             border-top: 1px solid #3498db;
             padding-top: 10px;
         }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 20px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .processing-message {
+            text-align: center;
+            padding: 20px;
+            color: #3498db;
+            display: none;
+        }
+
+        .uploaded-image-container {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -344,14 +369,22 @@
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📄</div>
                 <p>Click to upload bill image or drag and drop</p>
-                <p class="small">(For demo purposes, we'll use the sample bill above)</p>
+                <p class="small">(Supported formats: JPG, PNG, WebP)</p>
+                <input type="file" id="billUpload" accept="image/*" class="hidden">
             </div>
             
-            <input type="file" id="billUpload" accept="image/*" class="hidden">
+            <div class="uploaded-image-container">
+                <img id="imagePreview" class="image-preview" alt="Uploaded bill">
+            </div>
+            
+            <div class="processing-message" id="processingMessage">
+                Processing image... (This is a simulation - real OCR would require backend processing)
+            </div>
             
             <div class="navigation">
                 <div></div> <!-- Empty div for spacing -->
-                <button class="btn" id="nextToStep2">Use Demo Bill & Continue</button>
+                <button class="btn" id="useDemoBill">Use Demo Bill</button>
+                <button class="btn" id="processImage" style="display: none;">Process Image</button>
             </div>
         </div>
 
@@ -427,7 +460,7 @@
 
         // Global variables
         let people = [];
-        let dishes = [...demoBill];
+        let dishes = [];
         let splits = {};
 
         // DOM elements
@@ -437,7 +470,13 @@
         const step3 = document.getElementById('step3');
         const step4 = document.getElementById('step4');
         
-        const nextToStep2Btn = document.getElementById('nextToStep2');
+        const uploadArea = document.getElementById('uploadArea');
+        const billUpload = document.getElementById('billUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const processingMessage = document.getElementById('processingMessage');
+        const useDemoBillBtn = document.getElementById('useDemoBill');
+        const processImageBtn = document.getElementById('processImage');
+        
         const nextToStep3Btn = document.getElementById('nextToStep3');
         const nextToStep4Btn = document.getElementById('nextToStep4');
         
@@ -458,8 +497,69 @@
             stepElement.classList.add('active');
         }
 
-        // Step 1 to Step 2
-        nextToStep2Btn.addEventListener('click', () => {
+        // File upload functionality
+        uploadArea.addEventListener('click', () => {
+            billUpload.click();
+        });
+
+        billUpload.addEventListener('change', handleImageUpload);
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length) {
+                billUpload.files = e.dataTransfer.files;
+                handleImageUpload();
+            }
+        });
+
+        function handleImageUpload() {
+            const file = billUpload.files[0];
+            if (file) {
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    alert('Please upload an image file (JPG, PNG, etc.)');
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    processImageBtn.style.display = 'inline-block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Process image button
+        processImageBtn.addEventListener('click', () => {
+            processingMessage.style.display = 'block';
+            
+            // Simulate OCR processing delay
+            setTimeout(() => {
+                processingMessage.style.display = 'none';
+                // For demo purposes, we'll use the demo bill data
+                dishes = [...demoBill];
+                showStep(step2);
+            }, 2000);
+        });
+
+        // Use demo bill
+        useDemoBillBtn.addEventListener('click', () => {
+            dishes = [...demoBill];
             showStep(step2);
         });
 
@@ -480,7 +580,13 @@
         });
 
         // Back navigation
-        backToStep1Btn.addEventListener('click', () => showStep(step1));
+        backToStep1Btn.addEventListener('click', () => {
+            // Reset image preview
+            imagePreview.style.display = 'none';
+            processImageBtn.style.display = 'none';
+            billUpload.value = '';
+            showStep(step1);
+        });
         backToStep2Btn.addEventListener('click', () => showStep(step2));
         backToStep3Btn.addEventListener('click', () => showStep(step3));
 
@@ -488,9 +594,13 @@
         startOverBtn.addEventListener('click', () => {
             people = [];
             splits = {};
+            dishes = [];
             personList.innerHTML = '';
             results.innerHTML = '';
             personNameInput.value = '';
+            imagePreview.style.display = 'none';
+            processImageBtn.style.display = 'none';
+            billUpload.value = '';
             showStep(step1);
         });
 

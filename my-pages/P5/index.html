@@ -83,10 +83,6 @@
             font-weight: 600;
         }
         
-        .section-title i {
-            font-size: 1.6rem;
-        }
-        
         .input-group {
             display: flex;
             gap: 12px;
@@ -296,7 +292,7 @@
             background: white;
             border-radius: var(--radius);
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -337,6 +333,50 @@
             background: white;
             border-radius: 8px;
             border: 1px solid var(--border);
+        }
+        
+        .calculation-method {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .method-option {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .method-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .method-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .method-btn:hover:not(.active) {
+            border-color: var(--primary-light);
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .method-info {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 8px;
+            line-height: 1.4;
         }
         
         .switch {
@@ -401,6 +441,21 @@
             gap: 5px;
         }
         
+        .price-info {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        
+        .calculation-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid var(--success);
+        }
+        
         @media (max-width: 768px) {
             .input-group {
                 flex-direction: column;
@@ -412,6 +467,10 @@
             
             .content {
                 padding: 20px;
+            }
+            
+            .calculation-method {
+                flex-direction: column;
             }
         }
     </style>
@@ -450,7 +509,7 @@
                 </div>
                 <div class="input-group">
                     <input type="text" id="dishName" placeholder="Enter dish name">
-                    <input type="number" id="dishPrice" placeholder="Price per unit" min="0" step="0.01">
+                    <input type="number" id="dishPrice" placeholder="Amount" min="0" step="0.01">
                     <button id="addDishBtn" class="btn btn-primary">
                         <span>+</span> Add Dish
                     </button>
@@ -612,7 +671,7 @@
                     <button class="modal-close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p>Price per unit: $${price.toFixed(2)}</p>
+                    <p><strong>Dish amount: $${price.toFixed(2)}</strong></p>
                     
                     <div class="toggle-container">
                         <label class="switch">
@@ -620,6 +679,30 @@
                             <span class="slider"></span>
                         </label>
                         <span>Enable individual quantities</span>
+                    </div>
+                    
+                    <div id="calculationMethod" style="display: none;">
+                        <div class="calculation-method">
+                            <div class="method-option">
+                                <button class="method-btn active" data-method="divide">
+                                    Divide Total
+                                </button>
+                                <div class="method-info">
+                                    Total amount divided proportionally by quantities
+                                </div>
+                            </div>
+                            <div class="method-option">
+                                <button class="method-btn" data-method="multiply">
+                                    Multiply by Price
+                                </button>
+                                <div class="method-info">
+                                    Each quantity multiplied by price per unit
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calculation-preview" id="calculationPreview">
+                            <strong>Divide Method:</strong> Total amount ($${price.toFixed(2)}) ÷ Total quantities × Individual quantity
+                        </div>
                     </div>
                     
                     <div id="assignmentSection">
@@ -644,6 +727,8 @@
             // Add checkboxes for each person
             const checkboxesContainer = document.getElementById('assignmentCheckboxes');
             const quantityInputsContainer = document.getElementById('quantityInputs');
+            const calculationMethodSection = document.getElementById('calculationMethod');
+            const calculationPreview = document.getElementById('calculationPreview');
             
             people.forEach(person => {
                 // Add checkbox
@@ -674,6 +759,8 @@
                 quantityInputsContainer.appendChild(quantityItem);
             });
             
+            let calculationMethod = 'divide';
+            
             // Toggle quantity inputs based on checkbox
             const enableQuantitiesCheckbox = document.getElementById('enableQuantities');
             const quantitySection = document.getElementById('quantitySection');
@@ -681,6 +768,7 @@
             enableQuantitiesCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     quantitySection.style.display = 'block';
+                    calculationMethodSection.style.display = 'block';
                     
                     // Show quantity inputs for selected people
                     document.querySelectorAll('#assignmentCheckboxes input:checked').forEach(checkbox => {
@@ -689,6 +777,7 @@
                     });
                 } else {
                     quantitySection.style.display = 'none';
+                    calculationMethodSection.style.display = 'none';
                 }
             });
             
@@ -702,6 +791,29 @@
                         } else {
                             document.getElementById(`quantity-${personId}`).style.display = 'none';
                         }
+                    }
+                });
+            });
+            
+            // Calculation method selection
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    calculationMethod = this.getAttribute('data-method');
+                    
+                    // Update preview text
+                    if (calculationMethod === 'divide') {
+                        calculationPreview.innerHTML = `
+                            <strong>Divide Method:</strong> Total amount ($${price.toFixed(2)}) ÷ Total quantities × Individual quantity
+                        `;
+                    } else {
+                        calculationPreview.innerHTML = `
+                            <strong>Multiply Method:</strong> Individual quantity × Price per unit ($${price.toFixed(2)})
+                        `;
                     }
                 });
             });
@@ -762,7 +874,8 @@
                     price: price,
                     people: selectedPeople,
                     quantities: quantities,
-                    useQuantities: enableQuantitiesCheckbox.checked
+                    useQuantities: enableQuantitiesCheckbox.checked,
+                    calculationMethod: calculationMethod
                 });
                 
                 // Update UI
@@ -799,10 +912,19 @@
                     }).join(', ');
                 }
                 
+                const methodText = dish.useQuantities ? 
+                    `(${dish.calculationMethod === 'divide' ? 'Divided' : 'Multiplied'})` : '';
+                
                 li.innerHTML = `
                     <div>
-                        <div style="font-weight: 600; margin-bottom: 5px;">${dish.name} - $${dish.price.toFixed(2)}</div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">${dish.name} - $${dish.price.toFixed(2)} ${methodText}</div>
                         <div style="font-size: 0.9rem; color: #666;">Shared with: ${sharedWith}</div>
+                        ${dish.useQuantities ? 
+                            `<div style="font-size: 0.8rem; color: #888; margin-top: 3px;">
+                                ${dish.calculationMethod === 'divide' ? 
+                                    'Total amount divided by quantities' : 
+                                    'Quantities multiplied by price'}
+                            </div>` : ''}
                     </div>
                     <button class="btn btn-danger btn-sm" data-id="${dish.id}">
                         <span>×</span> Remove
@@ -845,14 +967,31 @@
                 amounts[person.id] = 0;
             });
             
-            // For each dish, split the cost based on quantities or evenly
+            // For each dish, split the cost based on calculation method
             dishes.forEach(dish => {
                 if (dish.useQuantities) {
-                    // Calculate cost based on each person's quantity
-                    dish.people.forEach(personId => {
-                        const personQuantity = dish.quantities[personId];
-                        amounts[personId] += dish.price * personQuantity;
-                    });
+                    if (dish.calculationMethod === 'divide') {
+                        // Calculate total quantity for this dish
+                        let totalQuantity = 0;
+                        dish.people.forEach(personId => {
+                            totalQuantity += dish.quantities[personId];
+                        });
+                        
+                        // Calculate cost per unit of quantity
+                        const costPerUnit = dish.price / totalQuantity;
+                        
+                        // Assign cost to each person based on their quantity
+                        dish.people.forEach(personId => {
+                            const personQuantity = dish.quantities[personId];
+                            amounts[personId] += costPerUnit * personQuantity;
+                        });
+                    } else {
+                        // Multiply method: Each quantity multiplied by the price
+                        dish.people.forEach(personId => {
+                            const personQuantity = dish.quantities[personId];
+                            amounts[personId] += dish.price * personQuantity;
+                        });
+                    }
                 } else {
                     // Split evenly among selected people
                     const costPerPerson = dish.price / dish.people.length;

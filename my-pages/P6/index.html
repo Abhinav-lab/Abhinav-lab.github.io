@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Bill Splitter</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #e9ecef;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--light);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #3aa8d0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e01a6f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e6890e;
+            transform: translateY(-2px);
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        .list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .compute-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .compute-btn {
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            margin: 0 auto;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 40px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .result-section {
+            padding: 25px;
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        
+        .results-title {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            background: var(--light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .result-total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .owed-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            background: var(--light);
+            border-radius: 8px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .owed-positive {
+            border-left: 4px solid var(--success);
+        }
+        
+        .owed-negative {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .quantity-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .quantity-value {
+            width: 50px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .person-quantity {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .person-cost {
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .calculation-method {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .method-option {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .method-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .method-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .method-btn:hover:not(.active) {
+            border-color: var(--primary-light);
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .method-info {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .error {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .price-info {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        
+        .calculation-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .bill-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .bill-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .bill-paid-by {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .calculation-method {
+                flex-direction: column;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Advanced Bill Splitter</h1>
+            <p>Split multiple bills, track payments, and see who owes whom</p>
+        </div>
+        
+        <div class="content">
+            <!-- Add People Section -->
+            <div class="section">
+                <div class="section-title">
+                    <span>👥</span>
+                    <h2>Add People</h2>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="personName" placeholder="Enter person's name">
+                    <button id="addPersonBtn" class="btn btn-primary">
+                        <span>+</span> Add Person
+                    </button>
+                </div>
+                <div id="personError" class="error"></div>
+                <ul id="personList" class="list">
+                    <li class="empty-state">No people added yet</li>
+                </ul>
+            </div>
+            
+            <!-- Add Bills Section -->
+            <div class="section">
+                <div class="section-title">
+                    <span>🧾</span>
+                    <h2>Add Bills</h2>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="billName" placeholder="Restaurant or place name">
+                    <input type="number" id="billTotal" placeholder="Total bill amount" min="0" step="0.01">
+                    <select id="paidBy">
+                        <option value="">Who paid?</option>
+                    </select>
+                    <button id="addBillBtn" class="btn btn-primary">
+                        <span>+</span> Add Bill
+                    </button>
+                </div>
+                <div id="billError" class="error"></div>
+                <ul id="billList" class="list">
+                    <li class="empty-state">No bills added yet</li>
+                </ul>
+            </div>
+            
+            <!-- Compute Button -->
+            <div class="compute-section">
+                <button id="computeBtn" class="btn btn-success compute-btn">
+                    💰 Compute All Splits
+                </button>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="results" class="results">
+                <div class="results-grid">
+                    <div class="result-section">
+                        <div class="results-title">Individual Totals</div>
+                        <div id="resultList"></div>
+                    </div>
+                    <div class="result-section">
+                        <div class="results-title">Who Owes Whom</div>
+                        <div id="owedList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let people = [];
+        let bills = [];
+        let currentModalOverlay = null;
+        
+        // DOM elements
+        const personNameInput = document.getElementById('personName');
+        const addPersonBtn = document.getElementById('addPersonBtn');
+        const personList = document.getElementById('personList');
+        const personError = document.getElementById('personError');
+        
+        const billNameInput = document.getElementById('billName');
+        const billTotalInput = document.getElementById('billTotal');
+        const paidBySelect = document.getElementById('paidBy');
+        const addBillBtn = document.getElementById('addBillBtn');
+        const billList = document.getElementById('billList');
+        const billError = document.getElementById('billError');
+        
+        const computeBtn = document.getElementById('computeBtn');
+        const results = document.getElementById('results');
+        const resultList = document.getElementById('resultList');
+        const owedList = document.getElementById('owedList');
+        
+        // Add person functionality
+        addPersonBtn.addEventListener('click', addPerson);
+        personNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addPerson();
+        });
+        
+        function addPerson() {
+            const name = personNameInput.value.trim();
+            
+            if (!name) {
+                showError(personError, "Please enter a name");
+                return;
+            }
+            
+            if (people.some(person => person.name === name)) {
+                showError(personError, "This person is already added");
+                return;
+            }
+            
+            // Add person to the list
+            const newPerson = {
+                id: Date.now(),
+                name: name
+            };
+            people.push(newPerson);
+            
+            // Update paid by dropdown
+            updatePaidBySelect();
+            
+            // Clear input and error
+            personNameInput.value = '';
+            personError.textContent = '';
+            
+            // Update UI
+            renderPeople();
+        }
+        
+        function updatePaidBySelect() {
+            paidBySelect.innerHTML = '<option value="">Who paid?</option>';
+            people.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.id;
+                option.textContent = person.name;
+                paidBySelect.appendChild(option);
+            });
+        }
+        
+        function renderPeople() {
+            if (people.length === 0) {
+                personList.innerHTML = '<li class="empty-state">No people added yet</li>';
+                return;
+            }
+            
+            personList.innerHTML = '';
+            people.forEach(person => {
+                const li = document.createElement('li');
+                li.className = 'list-item';
+                li.innerHTML = `
+                    <span>${person.name}</span>
+                    <button class="btn btn-danger btn-sm" data-id="${person.id}">
+                        <span>×</span> Remove
+                    </button>
+                `;
+                personList.appendChild(li);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.list-item button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    removePerson(id);
+                });
+            });
+        }
+        
+        function removePerson(id) {
+            people = people.filter(person => person.id !== id);
+            updatePaidBySelect();
+            renderPeople();
+        }
+        
+        // Add bill functionality
+        addBillBtn.addEventListener('click', addBill);
+        
+        function addBill() {
+            const name = billNameInput.value.trim();
+            const total = parseFloat(billTotalInput.value);
+            const paidById = parseInt(paidBySelect.value);
+            
+            if (!name) {
+                showError(billError, "Please enter a bill name");
+                return;
+            }
+            
+            if (isNaN(total) || total <= 0) {
+                showError(billError, "Please enter a valid total amount");
+                return;
+            }
+            
+            if (!paidById) {
+                showError(billError, "Please select who paid the bill");
+                return;
+            }
+            
+            if (people.length === 0) {
+                showError(billError, "Please add people first");
+                return;
+            }
+            
+            // Create modal for selecting people and quantities
+            createBillAssignmentModal(name, total, paidById);
+            
+            // Clear inputs and error
+            billNameInput.value = '';
+            billTotalInput.value = '';
+            paidBySelect.value = '';
+            billError.textContent = '';
+        }
+        
+        function createBillAssignmentModal(name, total, paidById) {
+            // Remove any existing modal first
+            if (currentModalOverlay) {
+                document.body.removeChild(currentModalOverlay);
+            }
+            
+            // Create modal overlay
+            currentModalOverlay = document.createElement('div');
+            currentModalOverlay.className = 'modal-overlay';
+            
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            
+            const paidByName = people.find(p => p.id === paidById)?.name || 'Unknown';
+            
+            modal.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Split Bill: "${name}"</div>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Total Bill: $${total.toFixed(2)}</strong></p>
+                    <p><strong>Paid by: ${paidByName}</strong></p>
+                    
+                    <div class="toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="enableQuantities">
+                            <span class="slider"></span>
+                        </label>
+                        <span>Enable individual quantities</span>
+                    </div>
+                    
+                    <div id="calculationMethod" style="display: none;">
+                        <div class="calculation-method">
+                            <div class="method-option">
+                                <button class="method-btn active" data-method="divide">
+                                    Divide Total
+                                </button>
+                                <div class="method-info">
+                                    Total amount divided proportionally by quantities
+                                </div>
+                            </div>
+                            <div class="method-option">
+                                <button class="method-btn" data-method="multiply">
+                                    Multiply by Price
+                                </button>
+                                <div class="method-info">
+                                    Each quantity multiplied by price per unit
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calculation-preview" id="calculationPreview">
+                            <strong>Divide Method:</strong> Total amount ($${total.toFixed(2)}) ÷ Total quantities × Individual quantity
+                        </div>
+                    </div>
+                    
+                    <div id="assignmentSection">
+                        <p><strong>Select who shared this bill:</strong></p>
+                        <div id="assignmentCheckboxes"></div>
+                    </div>
+                    
+                    <div id="quantitySection" style="display: none; margin-top: 20px;">
+                        <p><strong>Specify quantities for each person:</strong></p>
+                        <div id="quantityInputs"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelAssignment" class="btn btn-danger">Cancel</button>
+                    <button id="saveAssignment" class="btn btn-success">Save Bill</button>
+                </div>
+            `;
+            
+            currentModalOverlay.appendChild(modal);
+            document.body.appendChild(currentModalOverlay);
+            
+            // Add checkboxes for each person
+            const checkboxesContainer = document.getElementById('assignmentCheckboxes');
+            const quantityInputsContainer = document.getElementById('quantityInputs');
+            const calculationMethodSection = document.getElementById('calculationMethod');
+            const calculationPreview = document.getElementById('calculationPreview');
+            
+            people.forEach(person => {
+                // Add checkbox
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = 'list-item';
+                checkboxItem.style.marginBottom = '8px';
+                checkboxItem.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="person-${person.id}" value="${person.id}" checked>
+                        <label for="person-${person.id}">${person.name}</label>
+                    </div>
+                `;
+                checkboxesContainer.appendChild(checkboxItem);
+                
+                // Add quantity input (initially hidden)
+                const quantityItem = document.createElement('div');
+                quantityItem.className = 'person-quantity';
+                quantityItem.id = `quantity-${person.id}`;
+                quantityItem.style.display = 'none';
+                quantityItem.innerHTML = `
+                    <span>${person.name}</span>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="quantity-control">
+                            <button class="quantity-btn" data-action="decrease" data-person="${person.id}">-</button>
+                            <span class="quantity-value" id="qty-value-${person.id}">1</span>
+                            <button class="quantity-btn" data-action="increase" data-person="${person.id}">+</button>
+                        </div>
+                        <span class="person-cost" id="cost-${person.id}">$0.00</span>
+                    </div>
+                `;
+                quantityInputsContainer.appendChild(quantityItem);
+            });
+            
+            let calculationMethod = 'divide';
+            
+            // Function to update cost display
+            function updateCostDisplay() {
+                people.forEach(person => {
+                    const quantity = parseInt(document.getElementById(`qty-value-${person.id}`).textContent) || 0;
+                    let cost = 0;
+                    
+                    if (calculationMethod === 'divide') {
+                        // Calculate total quantity
+                        let totalQuantity = 0;
+                        document.querySelectorAll('#assignmentCheckboxes input:checked').forEach(checkbox => {
+                            const personId = checkbox.value;
+                            const personQty = parseInt(document.getElementById(`qty-value-${personId}`).textContent) || 0;
+                            totalQuantity += personQty;
+                        });
+                        
+                        if (totalQuantity > 0) {
+                            const costPerUnit = total / totalQuantity;
+                            cost = costPerUnit * quantity;
+                        }
+                    } else {
+                        // Multiply method
+                        cost = total * quantity;
+                    }
+                    
+                    document.getElementById(`cost-${person.id}`).textContent = `$${cost.toFixed(2)}`;
+                });
+            }
+            
+            // Toggle quantity inputs based on checkbox
+            const enableQuantitiesCheckbox = document.getElementById('enableQuantities');
+            const quantitySection = document.getElementById('quantitySection');
+            
+            enableQuantitiesCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    quantitySection.style.display = 'block';
+                    calculationMethodSection.style.display = 'block';
+                    
+                    // Show quantity inputs for selected people
+                    document.querySelectorAll('#assignmentCheckboxes input:checked').forEach(checkbox => {
+                        const personId = checkbox.value;
+                        document.getElementById(`quantity-${personId}`).style.display = 'flex';
+                    });
+                    
+                    // Update cost display
+                    updateCostDisplay();
+                } else {
+                    quantitySection.style.display = 'none';
+                    calculationMethodSection.style.display = 'none';
+                }
+            });
+            
+            // Update quantity inputs when checkboxes change
+            document.querySelectorAll('#assignmentCheckboxes input').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (enableQuantitiesCheckbox.checked) {
+                        const personId = this.value;
+                        if (this.checked) {
+                            document.getElementById(`quantity-${personId}`).style.display = 'flex';
+                        } else {
+                            document.getElementById(`quantity-${personId}`).style.display = 'none';
+                        }
+                        updateCostDisplay();
+                    }
+                });
+            });
+            
+            // Calculation method selection
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    calculationMethod = this.getAttribute('data-method');
+                    
+                    // Update preview text
+                    if (calculationMethod === 'divide') {
+                        calculationPreview.innerHTML = `
+                            <strong>Divide Method:</strong> Total amount ($${total.toFixed(2)}) ÷ Total quantities × Individual quantity
+                        `;
+                    } else {
+                        calculationPreview.innerHTML = `
+                            <strong>Multiply Method:</strong> Individual quantity × Price per unit ($${total.toFixed(2)})
+                        `;
+                    }
+                    
+                    // Update cost display
+                    updateCostDisplay();
+                });
+            });
+            
+            // Add event listeners for quantity buttons
+            function handleQuantityButtonClick(e) {
+                if (e.target.classList.contains('quantity-btn')) {
+                    const action = e.target.getAttribute('data-action');
+                    const personId = e.target.getAttribute('data-person');
+                    const quantityElement = document.getElementById(`qty-value-${personId}`);
+                    let value = parseInt(quantityElement.textContent);
+                    
+                    if (action === 'increase') {
+                        value++;
+                    } else if (action === 'decrease' && value > 1) {
+                        value--;
+                    }
+                    
+                    quantityElement.textContent = value;
+                    updateCostDisplay();
+                }
+            }
+            
+            // Add event listener directly to the modal
+            modal.addEventListener('click', handleQuantityButtonClick);
+            
+            // Add event listeners for modal buttons
+            document.getElementById('cancelAssignment').addEventListener('click', function() {
+                document.body.removeChild(currentModalOverlay);
+                currentModalOverlay = null;
+            });
+            
+            document.querySelector('.modal-close').addEventListener('click', function() {
+                document.body.removeChild(currentModalOverlay);
+                currentModalOverlay = null;
+            });
+            
+            document.getElementById('saveAssignment').addEventListener('click', function() {
+                // Get selected people
+                const selectedPeople = [];
+                const quantities = {};
+                
+                document.querySelectorAll('#assignmentCheckboxes input:checked').forEach(checkbox => {
+                    const personId = parseInt(checkbox.value);
+                    selectedPeople.push(personId);
+                    
+                    // Get quantity if enabled
+                    if (enableQuantitiesCheckbox.checked) {
+                        const quantityValue = document.getElementById(`qty-value-${personId}`).textContent;
+                        quantities[personId] = parseInt(quantityValue) || 1;
+                    } else {
+                        quantities[personId] = 1;
+                    }
+                });
+                
+                if (selectedPeople.length === 0) {
+                    alert('Please select at least one person');
+                    return;
+                }
+                
+                // Add bill to the list
+                bills.push({
+                    id: Date.now(),
+                    name: name,
+                    total: total,
+                    paidBy: paidById,
+                    people: selectedPeople,
+                    quantities: quantities,
+                    useQuantities: enableQuantitiesCheckbox.checked,
+                    calculationMethod: calculationMethod
+                });
+                
+                // Update UI
+                renderBills();
+                
+                // Close modal
+                document.body.removeChild(currentModalOverlay);
+                currentModalOverlay = null;
+            });
+            
+            // Initial cost display update
+            updateCostDisplay();
+        }
+        
+        function renderBills() {
+            if (bills.length === 0) {
+                billList.innerHTML = '<li class="empty-state">No bills added yet</li>';
+                return;
+            }
+            
+            billList.innerHTML = '';
+            bills.forEach(bill => {
+                const li = document.createElement('li');
+                li.className = 'list-item';
+                
+                // Get names of people who shared this bill
+                let sharedWith = '';
+                if (bill.useQuantities) {
+                    sharedWith = bill.people.map(personId => {
+                        const person = people.find(p => p.id === personId);
+                        const quantity = bill.quantities[personId];
+                        return person ? `${person.name} (${quantity})` : 'Unknown';
+                    }).join(', ');
+                } else {
+                    sharedWith = bill.people.map(personId => {
+                        const person = people.find(p => p.id === personId);
+                        return person ? person.name : 'Unknown';
+                    }).join(', ');
+                }
+                
+                const paidByName = people.find(p => p.id === bill.paidBy)?.name || 'Unknown';
+                const methodText = bill.useQuantities ? 
+                    `(${bill.calculationMethod === 'divide' ? 'Divided' : 'Multiplied'})` : '';
+                
+                li.innerHTML = `
+                    <div>
+                        <div class="bill-header">
+                            <div class="bill-title">${bill.name} - $${bill.total.toFixed(2)} ${methodText}</div>
+                            <div class="bill-paid-by">Paid by: ${paidByName}</div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: #666;">Shared with: ${sharedWith}</div>
+                        ${bill.useQuantities ? 
+                            `<div style="font-size: 0.8rem; color: #888; margin-top: 3px;">
+                                ${bill.calculationMethod === 'divide' ? 
+                                    'Total amount divided by quantities' : 
+                                    'Quantities multiplied by price'}
+                            </div>` : ''}
+                    </div>
+                    <button class="btn btn-danger btn-sm" data-id="${bill.id}">
+                        <span>×</span> Remove
+                    </button>
+                `;
+                billList.appendChild(li);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.list-item button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    removeBill(id);
+                });
+            });
+        }
+        
+        function removeBill(id) {
+            bills = bills.filter(bill => bill.id !== id);
+            renderBills();
+        }
+        
+        // Compute functionality
+        computeBtn.addEventListener('click', computeSplit);
+        
+        function computeSplit() {
+            if (people.length === 0) {
+                alert('Please add at least one person');
+                return;
+            }
+            
+            if (bills.length === 0) {
+                alert('Please add at least one bill');
+                return;
+            }
+            
+            // Calculate amounts for each person
+            const amounts = {};
+            const payments = {};
+            
+            people.forEach(person => {
+                amounts[person.id] = 0;
+                payments[person.id] = 0;
+            });
+            
+            // For each bill, split the cost based on calculation method
+            bills.forEach(bill => {
+                // Track who paid
+                payments[bill.paidBy] += bill.total;
+                
+                if (bill.useQuantities) {
+                    if (bill.calculationMethod === 'divide') {
+                        // Calculate total quantity for this bill
+                        let totalQuantity = 0;
+                        bill.people.forEach(personId => {
+                            totalQuantity += bill.quantities[personId];
+                        });
+                        
+                        // Calculate cost per unit of quantity
+                        const costPerUnit = bill.total / totalQuantity;
+                        
+                        // Assign cost to each person based on their quantity
+                        bill.people.forEach(personId => {
+                            const personQuantity = bill.quantities[personId];
+                            amounts[personId] += costPerUnit * personQuantity;
+                        });
+                    } else {
+                        // Multiply method: Each quantity multiplied by the price
+                        bill.people.forEach(personId => {
+                            const personQuantity = bill.quantities[personId];
+                            amounts[personId] += bill.total * personQuantity;
+                        });
+                    }
+                } else {
+                    // Split evenly among selected people
+                    const costPerPerson = bill.total / bill.people.length;
+                    bill.people.forEach(personId => {
+                        amounts[personId] += costPerPerson;
+                    });
+                }
+            });
+            
+            // Calculate net amounts (payments - amounts owed)
+            const netAmounts = {};
+            people.forEach(person => {
+                netAmounts[person.id] = payments[person.id] - amounts[person.id];
+            });
+            
+            // Display results
+            displayResults(amounts, payments, netAmounts);
+        }
+        
+        function displayResults(amounts, payments, netAmounts) {
+            // Display individual totals
+            resultList.innerHTML = '';
+            
+            let totalAmount = 0;
+            let totalPayments = 0;
+            
+            people.forEach(person => {
+                const amount = amounts[person.id];
+                const payment = payments[person.id];
+                totalAmount += amount;
+                totalPayments += payment;
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <div>
+                        <strong>${person.name}</strong>
+                        <div style="font-size: 0.9rem; color: #666;">
+                            Paid: $${payment.toFixed(2)} | Owes: $${amount.toFixed(2)}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; color: ${netAmounts[person.id] >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                            ${netAmounts[person.id] >= 0 ? 'Gets back' : 'Owes'} $${Math.abs(netAmounts[person.id]).toFixed(2)}
+                        </div>
+                    </div>
+                `;
+                resultList.appendChild(resultItem);
+            });
+            
+            // Add total
+            const totalItem = document.createElement('div');
+            totalItem.className = 'result-item result-total';
+            totalItem.innerHTML = `
+                <span>Total</span>
+                <span>Paid: $${totalPayments.toFixed(2)} | Owed: $${totalAmount.toFixed(2)}</span>
+            `;
+            resultList.appendChild(totalItem);
+            
+            // Display who owes whom
+            displayOwedAmounts(netAmounts);
+            
+            // Show results
+            results.style.display = 'block';
+            
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function displayOwedAmounts(netAmounts) {
+            owedList.innerHTML = '';
+            
+            // Separate people who owe money and people who are owed money
+            const debtors = [];
+            const creditors = [];
+            
+            people.forEach(person => {
+                const net = netAmounts[person.id];
+                if (net < 0) {
+                    debtors.push({ person, amount: -net }); // Convert to positive amount owed
+                } else if (net > 0) {
+                    creditors.push({ person, amount: net });
+                }
+            });
+            
+            // Sort by amount (largest first)
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+            
+            // Calculate settlements
+            let i = 0, j = 0;
+            
+            while (i < debtors.length && j < creditors.length) {
+                const debtor = debtors[i];
+                const creditor = creditors[j];
+                
+                const settleAmount = Math.min(debtor.amount, creditor.amount);
+                
+                if (settleAmount > 0.01) { // Only show settlements above 1 cent
+                    const owedItem = document.createElement('div');
+                    owedItem.className = 'owed-item';
+                    owedItem.innerHTML = `
+                        <div>
+                            <strong>${debtor.person.name}</strong> owes <strong>${creditor.person.name}</strong>
+                        </div>
+                        <span style="font-weight: 600; color: var(--warning);">$${settleAmount.toFixed(2)}</span>
+                    `;
+                    owedList.appendChild(owedItem);
+                }
+                
+                // Update amounts
+                debtor.amount -= settleAmount;
+                creditor.amount -= settleAmount;
+                
+                // Move to next debtor/creditor if current one is settled
+                if (debtor.amount < 0.01) i++;
+                if (creditor.amount < 0.01) j++;
+            }
+            
+            if (owedList.children.length === 0) {
+                owedList.innerHTML = '<div class="empty-state">All settled up! No money needs to change hands.</div>';
+            }
+        }
+        
+        function showError(element, message) {
+            element.textContent = message;
+        }
+    </script>
+</body>
+</html>

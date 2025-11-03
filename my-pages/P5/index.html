@@ -3,201 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Splitter with Quantity Pricing</title>
+    <title>Bill Splitter</title>
     <style>
         :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #6b8cbc;
-            --accent-color: #ff7e5f;
-            --light-color: #f5f7fa;
-            --dark-color: #333;
-            --success-color: #4caf50;
-            --danger-color: #f44336;
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #e9ecef;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
         }
         
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
         
         body {
-            background-color: #f0f2f5;
-            color: var(--dark-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
             line-height: 1.6;
+            min-height: 100vh;
             padding: 20px;
         }
         
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
             padding: 30px;
         }
         
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-        }
-        
         .section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: var(--light);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
         
-        h2 {
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .section-title i {
+            font-size: 1.6rem;
         }
         
         .input-group {
             display: flex;
+            gap: 12px;
             margin-bottom: 15px;
-            gap: 10px;
         }
         
         input[type="text"],
         input[type="number"] {
             flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
             font-size: 1rem;
+            transition: all 0.3s ease;
         }
         
-        button {
-            background-color: var(--primary-color);
-            color: white;
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .btn {
+            padding: 14px 24px;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        button:hover {
-            background-color: var(--secondary-color);
+        .btn-primary {
+            background: var(--primary);
+            color: white;
         }
         
-        button.danger {
-            background-color: var(--danger-color);
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
         }
         
-        button.danger:hover {
-            background-color: #d32f2f;
+        .btn-success {
+            background: var(--success);
+            color: white;
         }
         
-        button.success {
-            background-color: var(--success-color);
+        .btn-success:hover {
+            background: #3aa8d0;
+            transform: translateY(-2px);
         }
         
-        button.success:hover {
-            background-color: #388e3c;
+        .btn-danger {
+            background: var(--danger);
+            color: white;
         }
         
-        button.secondary {
-            background-color: #6c757d;
+        .btn-danger:hover {
+            background: #e01a6f;
+            transform: translateY(-2px);
         }
         
-        button.secondary:hover {
-            background-color: #5a6268;
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
         }
         
-        .person-list, .dish-list {
-            list-style-type: none;
-            margin-top: 10px;
+        .list {
+            list-style: none;
+            margin-top: 15px;
         }
         
-        .person-item, .dish-item {
+        .list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background-color: var(--light-color);
-            margin-bottom: 8px;
-            border-radius: 4px;
+            padding: 16px 20px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
         }
         
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
+        .list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
         
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .quantity-input {
-            width: 80px;
+        .empty-state {
             text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .compute-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .compute-btn {
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            margin: 0 auto;
         }
         
         .results {
             display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background-color: var(--light-color);
-            border-radius: 8px;
+            margin-top: 40px;
+            padding: 25px;
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        
+        .results-title {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
         }
         
         .result-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
+            align-items: center;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            background: var(--light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
         }
         
-        .result-item:last-child {
-            border-bottom: none;
+        .result-total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border-left: 4px solid var(--secondary);
         }
         
-        .total {
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
             font-weight: bold;
-            color: var(--primary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
         
-        .error {
-            color: var(--danger-color);
-            font-size: 0.9rem;
-            margin-top: 5px;
+        .quantity-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
         }
         
-        .empty-state {
+        .quantity-value {
+            width: 50px;
             text-align: center;
-            color: #777;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .person-quantity {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
             padding: 20px;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-body {
+            padding: 25px;
         }
         
         .toggle-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 10px 0;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
         
         .switch {
             position: relative;
             display: inline-block;
             width: 50px;
-            height: 24px;
+            height: 26px;
         }
         
         .switch input {
@@ -213,123 +359,120 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background: #ccc;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 34px;
         }
         
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 18px;
+            width: 18px;
             left: 4px;
             bottom: 4px;
-            background-color: white;
+            background: white;
             transition: .4s;
             border-radius: 50%;
         }
         
         input:checked + .slider {
-            background-color: var(--primary-color);
+            background: var(--primary);
         }
         
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(24px);
         }
         
-        .person-quantity {
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border);
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-top: 8px;
-            padding: 8px 15px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
+            justify-content: flex-end;
+            gap: 12px;
         }
         
-        .person-quantity-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .quantity-control {
+        .error {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 5px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         
-        .quantity-btn {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            border-radius: 50%;
-            font-weight: bold;
-        }
-        
-        .quantity-value {
-            width: 50px;
-            text-align: center;
-            margin: 0 5px;
-        }
-        
-        .quantity-price {
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-        
-        .price-info {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 5px;
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Bill Splitter with Quantity Pricing</h1>
+        <div class="header">
+            <h1>Bill Splitter</h1>
+            <p>Split bills fairly with friends and family</p>
+        </div>
         
-        <!-- Add People Section -->
-        <div class="section">
-            <h2>Add People</h2>
-            <div class="input-group">
-                <input type="text" id="personName" placeholder="Enter person's name">
-                <button id="addPersonBtn">Add Person</button>
+        <div class="content">
+            <!-- Add People Section -->
+            <div class="section">
+                <div class="section-title">
+                    <span>👥</span>
+                    <h2>Add People</h2>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="personName" placeholder="Enter person's name">
+                    <button id="addPersonBtn" class="btn btn-primary">
+                        <span>+</span> Add Person
+                    </button>
+                </div>
+                <div id="personError" class="error"></div>
+                <ul id="personList" class="list">
+                    <li class="empty-state">No people added yet</li>
+                </ul>
             </div>
-            <div id="personError" class="error"></div>
-            <ul id="personList" class="person-list">
-                <li class="empty-state">No people added yet</li>
-            </ul>
-        </div>
-        
-        <!-- Add Dishes Section -->
-        <div class="section">
-            <h2>Add Dishes</h2>
-            <div class="input-group">
-                <input type="text" id="dishName" placeholder="Enter dish name">
-                <input type="number" id="dishPrice" placeholder="Price per unit" min="0" step="0.01">
-                <button id="addDishBtn">Add Dish</button>
+            
+            <!-- Add Dishes Section -->
+            <div class="section">
+                <div class="section-title">
+                    <span>🍽️</span>
+                    <h2>Add Dishes</h2>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="dishName" placeholder="Enter dish name">
+                    <input type="number" id="dishPrice" placeholder="Price per unit" min="0" step="0.01">
+                    <button id="addDishBtn" class="btn btn-primary">
+                        <span>+</span> Add Dish
+                    </button>
+                </div>
+                <div id="dishError" class="error"></div>
+                <ul id="dishList" class="list">
+                    <li class="empty-state">No dishes added yet</li>
+                </ul>
             </div>
-            <div id="dishError" class="error"></div>
-            <ul id="dishList" class="dish-list">
-                <li class="empty-state">No dishes added yet</li>
-            </ul>
-        </div>
-        
-        <!-- Compute Button -->
-        <div style="text-align: center; margin: 30px 0;">
-            <button id="computeBtn" class="success" style="padding: 12px 30px; font-size: 1.1rem;">Compute Split</button>
-        </div>
-        
-        <!-- Results Section -->
-        <div id="results" class="results">
-            <h2>Bill Split Results</h2>
-            <div id="resultList"></div>
+            
+            <!-- Compute Button -->
+            <div class="compute-section">
+                <button id="computeBtn" class="btn btn-success compute-btn">
+                    💰 Compute Split
+                </button>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="results" class="results">
+                <div class="results-title">Bill Split Results</div>
+                <div id="resultList"></div>
+            </div>
         </div>
     </div>
 
@@ -364,12 +507,12 @@
             const name = personNameInput.value.trim();
             
             if (!name) {
-                personError.textContent = "Please enter a name";
+                showError(personError, "Please enter a name");
                 return;
             }
             
             if (people.some(person => person.name === name)) {
-                personError.textContent = "This person is already added";
+                showError(personError, "This person is already added");
                 return;
             }
             
@@ -396,16 +539,18 @@
             personList.innerHTML = '';
             people.forEach(person => {
                 const li = document.createElement('li');
-                li.className = 'person-item';
+                li.className = 'list-item';
                 li.innerHTML = `
                     <span>${person.name}</span>
-                    <button class="danger" data-id="${person.id}">Remove</button>
+                    <button class="btn btn-danger btn-sm" data-id="${person.id}">
+                        <span>×</span> Remove
+                    </button>
                 `;
                 personList.appendChild(li);
             });
             
             // Add event listeners to remove buttons
-            document.querySelectorAll('.person-item button').forEach(button => {
+            document.querySelectorAll('.list-item button').forEach(button => {
                 button.addEventListener('click', function() {
                     const id = parseInt(this.getAttribute('data-id'));
                     removePerson(id);
@@ -429,17 +574,17 @@
             const price = parseFloat(dishPriceInput.value);
             
             if (!name) {
-                dishError.textContent = "Please enter a dish name";
+                showError(dishError, "Please enter a dish name");
                 return;
             }
             
             if (isNaN(price) || price <= 0) {
-                dishError.textContent = "Please enter a valid price";
+                showError(dishError, "Please enter a valid price");
                 return;
             }
             
             if (people.length === 0) {
-                dishError.textContent = "Please add people first";
+                showError(dishError, "Please add people first");
                 return;
             }
             
@@ -455,60 +600,45 @@
         function createDishAssignmentModal(name, price) {
             // Create modal overlay
             const modalOverlay = document.createElement('div');
-            modalOverlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.5);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            `;
+            modalOverlay.className = 'modal-overlay';
             
             // Create modal content
-            const modalContent = document.createElement('div');
-            modalContent.style.cssText = `
-                background-color: white;
-                padding: 25px;
-                border-radius: 8px;
-                width: 90%;
-                max-width: 700px;
-                max-height: 80vh;
-                overflow-y: auto;
-            `;
+            const modal = document.createElement('div');
+            modal.className = 'modal';
             
-            modalContent.innerHTML = `
-                <h2>Assign "${name}" to People</h2>
-                <p class="price-info">Price per unit: $${price.toFixed(2)}</p>
-                
-                <div class="toggle-container">
-                    <label class="switch">
-                        <input type="checkbox" id="enableQuantities">
-                        <span class="slider"></span>
-                    </label>
-                    <span>Enable individual quantities</span>
+            modal.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Assign "${name}"</div>
+                    <button class="modal-close">&times;</button>
                 </div>
-                
-                <div id="assignmentSection">
-                    <p>Select who shared this dish:</p>
-                    <div id="assignmentCheckboxes" class="checkbox-group"></div>
+                <div class="modal-body">
+                    <p>Price per unit: $${price.toFixed(2)}</p>
+                    
+                    <div class="toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="enableQuantities">
+                            <span class="slider"></span>
+                        </label>
+                        <span>Enable individual quantities</span>
+                    </div>
+                    
+                    <div id="assignmentSection">
+                        <p><strong>Select who shared this dish:</strong></p>
+                        <div id="assignmentCheckboxes"></div>
+                    </div>
+                    
+                    <div id="quantitySection" style="display: none; margin-top: 20px;">
+                        <p><strong>Specify quantities for each person:</strong></p>
+                        <div id="quantityInputs"></div>
+                    </div>
                 </div>
-                
-                <div id="quantitySection" style="display: none; margin-top: 15px;">
-                    <p>Specify quantities for each person:</p>
-                    <div id="quantityInputs"></div>
-                </div>
-                
-                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
-                    <button id="cancelAssignment" class="danger">Cancel</button>
-                    <button id="saveAssignment" class="success">Save</button>
+                <div class="modal-footer">
+                    <button id="cancelAssignment" class="btn btn-danger">Cancel</button>
+                    <button id="saveAssignment" class="btn btn-success">Save Dish</button>
                 </div>
             `;
             
-            modalOverlay.appendChild(modalContent);
+            modalOverlay.appendChild(modal);
             document.body.appendChild(modalOverlay);
             
             // Add checkboxes for each person
@@ -518,10 +648,13 @@
             people.forEach(person => {
                 // Add checkbox
                 const checkboxItem = document.createElement('div');
-                checkboxItem.className = 'checkbox-item';
+                checkboxItem.className = 'list-item';
+                checkboxItem.style.marginBottom = '8px';
                 checkboxItem.innerHTML = `
-                    <input type="checkbox" id="person-${person.id}" value="${person.id}" checked>
-                    <label for="person-${person.id}">${person.name}</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="person-${person.id}" value="${person.id}" checked>
+                        <label for="person-${person.id}">${person.name}</label>
+                    </div>
                 `;
                 checkboxesContainer.appendChild(checkboxItem);
                 
@@ -531,14 +664,11 @@
                 quantityItem.id = `quantity-${person.id}`;
                 quantityItem.style.display = 'none';
                 quantityItem.innerHTML = `
-                    <div class="person-quantity-info">
-                        <span>${person.name}</span>
-                    </div>
+                    <span>${person.name}</span>
                     <div class="quantity-control">
-                        <button class="quantity-btn secondary" data-action="decrease">-</button>
-                        <input type="number" id="qty-${person.id}" value="1" min="1" class="quantity-value">
-                        <button class="quantity-btn secondary" data-action="increase">+</button>
-                        <span class="quantity-price" id="price-${person.id}">$${price.toFixed(2)}</span>
+                        <button class="quantity-btn" data-action="decrease">-</button>
+                        <span class="quantity-value" id="qty-value-${person.id}">1</span>
+                        <button class="quantity-btn" data-action="increase">+</button>
                     </div>
                 `;
                 quantityInputsContainer.appendChild(quantityItem);
@@ -580,8 +710,8 @@
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('quantity-btn')) {
                     const action = e.target.getAttribute('data-action');
-                    const input = e.target.parentElement.querySelector('input[type="number"]');
-                    let value = parseInt(input.value);
+                    const quantityElement = e.target.parentElement.querySelector('.quantity-value');
+                    let value = parseInt(quantityElement.textContent);
                     
                     if (action === 'increase') {
                         value++;
@@ -589,27 +719,16 @@
                         value--;
                     }
                     
-                    input.value = value;
-                    
-                    // Update price display
-                    const personId = input.id.replace('qty-', '');
-                    const totalPrice = (value * price).toFixed(2);
-                    document.getElementById(`price-${personId}`).textContent = `$${totalPrice}`;
-                }
-            });
-            
-            // Update price when quantity input changes
-            document.addEventListener('input', function(e) {
-                if (e.target.type === 'number' && e.target.classList.contains('quantity-value')) {
-                    const value = parseInt(e.target.value) || 1;
-                    const personId = e.target.id.replace('qty-', '');
-                    const totalPrice = (value * price).toFixed(2);
-                    document.getElementById(`price-${personId}`).textContent = `$${totalPrice}`;
+                    quantityElement.textContent = value;
                 }
             });
             
             // Add event listeners
             document.getElementById('cancelAssignment').addEventListener('click', function() {
+                document.body.removeChild(modalOverlay);
+            });
+            
+            document.querySelector('.modal-close').addEventListener('click', function() {
                 document.body.removeChild(modalOverlay);
             });
             
@@ -624,8 +743,8 @@
                     
                     // Get quantity if enabled
                     if (enableQuantitiesCheckbox.checked) {
-                        const quantityInput = document.getElementById(`qty-${personId}`);
-                        quantities[personId] = parseInt(quantityInput.value) || 1;
+                        const quantityValue = document.getElementById(`qty-value-${personId}`).textContent;
+                        quantities[personId] = parseInt(quantityValue) || 1;
                     } else {
                         quantities[personId] = 1;
                     }
@@ -663,7 +782,7 @@
             dishList.innerHTML = '';
             dishes.forEach(dish => {
                 const li = document.createElement('li');
-                li.className = 'dish-item';
+                li.className = 'list-item';
                 
                 // Get names of people who shared this dish
                 let sharedWith = '';
@@ -671,8 +790,7 @@
                     sharedWith = dish.people.map(personId => {
                         const person = people.find(p => p.id === personId);
                         const quantity = dish.quantities[personId];
-                        const totalPrice = (quantity * dish.price).toFixed(2);
-                        return person ? `${person.name} (${quantity} × $${dish.price.toFixed(2)} = $${totalPrice})` : 'Unknown';
+                        return person ? `${person.name} (${quantity})` : 'Unknown';
                     }).join(', ');
                 } else {
                     sharedWith = dish.people.map(personId => {
@@ -683,17 +801,18 @@
                 
                 li.innerHTML = `
                     <div>
-                        <strong>${dish.name}</strong> - $${dish.price.toFixed(2)} per unit
+                        <div style="font-weight: 600; margin-bottom: 5px;">${dish.name} - $${dish.price.toFixed(2)}</div>
                         <div style="font-size: 0.9rem; color: #666;">Shared with: ${sharedWith}</div>
-                        ${dish.useQuantities ? '<div style="font-size: 0.8rem; color: #888;">(Individual quantities enabled)</div>' : ''}
                     </div>
-                    <button class="danger" data-id="${dish.id}">Remove</button>
+                    <button class="btn btn-danger btn-sm" data-id="${dish.id}">
+                        <span>×</span> Remove
+                    </button>
                 `;
                 dishList.appendChild(li);
             });
             
             // Add event listeners to remove buttons
-            document.querySelectorAll('.dish-item button').forEach(button => {
+            document.querySelectorAll('.list-item button').forEach(button => {
                 button.addEventListener('click', function() {
                     const id = parseInt(this.getAttribute('data-id'));
                     removeDish(id);
@@ -767,7 +886,7 @@
             
             // Add total
             const totalItem = document.createElement('div');
-            totalItem.className = 'result-item total';
+            totalItem.className = 'result-item result-total';
             totalItem.innerHTML = `
                 <span>Total</span>
                 <span>$${total.toFixed(2)}</span>
@@ -779,6 +898,10 @@
             
             // Scroll to results
             results.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(element, message) {
+            element.textContent = message;
         }
     </script>
 </body>

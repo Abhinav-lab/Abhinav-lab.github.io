@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Splitter with Quantity</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff7e5f;
+            --light-color: #f5f7fa;
+            --dark-color: #333;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        
+        button.danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        button.success {
+            background-color: var(--success-color);
+        }
+        
+        button.success:hover {
+            background-color: #388e3c;
+        }
+        
+        button.secondary {
+            background-color: #6c757d;
+        }
+        
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .person-list, .dish-list {
+            list-style-type: none;
+            margin-top: 10px;
+        }
+        
+        .person-item, .dish-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--light-color);
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quantity-input {
+            width: 80px;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .total {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .error {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .person-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+        
+        .person-quantity input {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bill Splitter with Quantity Support</h1>
+        
+        <!-- Add People Section -->
+        <div class="section">
+            <h2>Add People</h2>
+            <div class="input-group">
+                <input type="text" id="personName" placeholder="Enter person's name">
+                <button id="addPersonBtn">Add Person</button>
+            </div>
+            <div id="personError" class="error"></div>
+            <ul id="personList" class="person-list">
+                <li class="empty-state">No people added yet</li>
+            </ul>
+        </div>
+        
+        <!-- Add Dishes Section -->
+        <div class="section">
+            <h2>Add Dishes</h2>
+            <div class="input-group">
+                <input type="text" id="dishName" placeholder="Enter dish name">
+                <input type="number" id="dishPrice" placeholder="Price per unit" min="0" step="0.01">
+                <button id="addDishBtn">Add Dish</button>
+            </div>
+            <div id="dishError" class="error"></div>
+            <ul id="dishList" class="dish-list">
+                <li class="empty-state">No dishes added yet</li>
+            </ul>
+        </div>
+        
+        <!-- Compute Button -->
+        <div style="text-align: center; margin: 30px 0;">
+            <button id="computeBtn" class="success" style="padding: 12px 30px; font-size: 1.1rem;">Compute Split</button>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="results" class="results">
+            <h2>Bill Split Results</h2>
+            <div id="resultList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let people = [];
+        let dishes = [];
+        
+        // DOM elements
+        const personNameInput = document.getElementById('personName');
+        const addPersonBtn = document.getElementById('addPersonBtn');
+        const personList = document.getElementById('personList');
+        const personError = document.getElementById('personError');
+        
+        const dishNameInput = document.getElementById('dishName');
+        const dishPriceInput = document.getElementById('dishPrice');
+        const addDishBtn = document.getElementById('addDishBtn');
+        const dishList = document.getElementById('dishList');
+        const dishError = document.getElementById('dishError');
+        
+        const computeBtn = document.getElementById('computeBtn');
+        const results = document.getElementById('results');
+        const resultList = document.getElementById('resultList');
+        
+        // Add person functionality
+        addPersonBtn.addEventListener('click', addPerson);
+        personNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addPerson();
+        });
+        
+        function addPerson() {
+            const name = personNameInput.value.trim();
+            
+            if (!name) {
+                personError.textContent = "Please enter a name";
+                return;
+            }
+            
+            if (people.some(person => person.name === name)) {
+                personError.textContent = "This person is already added";
+                return;
+            }
+            
+            // Add person to the list
+            people.push({
+                id: Date.now(),
+                name: name
+            });
+            
+            // Clear input and error
+            personNameInput.value = '';
+            personError.textContent = '';
+            
+            // Update UI
+            renderPeople();
+        }
+        
+        function renderPeople() {
+            if (people.length === 0) {
+                personList.innerHTML = '<li class="empty-state">No people added yet</li>';
+                return;
+            }
+            
+            personList.innerHTML = '';
+            people.forEach(person => {
+                const li = document.createElement('li');
+                li.className = 'person-item';
+                li.innerHTML = `
+                    <span>${person.name}</span>
+                    <button class="danger" data-id="${person.id}">Remove</button>
+                `;
+                personList.appendChild(li);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.person-item button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    removePerson(id);
+                });
+            });
+        }
+        
+        function removePerson(id) {
+            people = people.filter(person => person.id !== id);
+            renderPeople();
+        }
+        
+        // Add dish functionality
+        addDishBtn.addEventListener('click', addDish);
+        dishNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addDish();
+        });
+        
+        function addDish() {
+            const name = dishNameInput.value.trim();
+            const price = parseFloat(dishPriceInput.value);
+            
+            if (!name) {
+                dishError.textContent = "Please enter a dish name";
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                dishError.textContent = "Please enter a valid price";
+                return;
+            }
+            
+            if (people.length === 0) {
+                dishError.textContent = "Please add people first";
+                return;
+            }
+            
+            // Create modal for selecting people and quantities
+            createDishAssignmentModal(name, price);
+            
+            // Clear inputs and error
+            dishNameInput.value = '';
+            dishPriceInput.value = '';
+            dishError.textContent = '';
+        }
+        
+        function createDishAssignmentModal(name, price) {
+            // Create modal overlay
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background-color: white;
+                padding: 25px;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+            `;
+            
+            modalContent.innerHTML = `
+                <h2>Assign "${name}" to People</h2>
+                <p>Price per unit: $${price.toFixed(2)}</p>
+                
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="enableQuantities">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Enable individual quantities</span>
+                </div>
+                
+                <div id="assignmentSection">
+                    <p>Select who shared this dish:</p>
+                    <div id="assignmentCheckboxes" class="checkbox-group"></div>
+                </div>
+                
+                <div id="quantitySection" style="display: none; margin-top: 15px;">
+                    <p>Specify quantities for each person:</p>
+                    <div id="quantityInputs"></div>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="cancelAssignment" class="danger">Cancel</button>
+                    <button id="saveAssignment" class="success">Save</button>
+                </div>
+            `;
+            
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+            
+            // Add checkboxes for each person
+            const checkboxesContainer = document.getElementById('assignmentCheckboxes');
+            const quantityInputsContainer = document.getElementById('quantityInputs');
+            
+            people.forEach(person => {
+                // Add checkbox
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = 'checkbox-item';
+                checkboxItem.innerHTML = `
+                    <input type="checkbox" id="person-${person.id}" value="${person.id}" checked>
+                    <label for="person-${person.id}">${person.name}</label>
+                `;
+                checkboxesContainer.appendChild(checkboxItem);
+                
+                // Add quantity input (initially hidden)
+                const quantityItem = document.createElement('div');
+                quantityItem.className = 'person-quantity';
+                quantityItem.id = `quantity-${person.id}`;
+                quantityItem.style.display = 'none';
+                quantityItem.innerHTML = `
+                    <label for="qty-${person.id}">${person.name}:</label>
+                    <input type="number" id="qty-${person.id}" value="1" min="1" class="quantity-input">
+                `;
+                quantityInputsContainer.appendChild(quantityItem);
+            });
+            
+            // Toggle quantity inputs based on checkbox
+            const enableQuantitiesCheckbox = document.getElementById('enableQuantities');
+            const quantitySection = document.getElementById('quantitySection');
+            
+            enableQuantitiesCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    quantitySection.style.display = 'block';
+                    
+                    // Show quantity inputs for selected people
+                    document.querySelectorAll('#assignmentCheckboxes input:checked').forEach(checkbox => {
+                        const personId = checkbox.value;
+                        document.getElementById(`quantity-${personId}`).style.display = 'flex';
+                    });
+                } else {
+                    quantitySection.style.display = 'none';
+                }
+            });
+            
+            // Update quantity inputs when checkboxes change
+            document.querySelectorAll('#assignmentCheckboxes input').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (enableQuantitiesCheckbox.checked) {
+                        const personId = this.value;
+                        if (this.checked) {
+                            document.getElementById(`quantity-${personId}`).style.display = 'flex';
+                        } else {
+                            document.getElementById(`quantity-${personId}`).style.display = 'none';
+                        }
+                    }
+                });
+            });
+            
+            // Add event listeners
+            document.getElementById('cancelAssignment').addEventListener('click', function() {
+                document.body.removeChild(modalOverlay);
+            });
+            
+            document.getElementById('saveAssignment').addEventListener('click', function() {
+                // Get selected people
+                const selectedPeople = [];
+                const quantities = {};
+                
+                document.querySelectorAll('#assignmentCheckboxes input:checked').forEach(checkbox => {
+                    const personId = parseInt(checkbox.value);
+                    selectedPeople.push(personId);
+                    
+                    // Get quantity if enabled
+                    if (enableQuantitiesCheckbox.checked) {
+                        const quantityInput = document.getElementById(`qty-${personId}`);
+                        quantities[personId] = parseInt(quantityInput.value) || 1;
+                    } else {
+                        quantities[personId] = 1;
+                    }
+                });
+                
+                if (selectedPeople.length === 0) {
+                    alert('Please select at least one person');
+                    return;
+                }
+                
+                // Add dish to the list
+                dishes.push({
+                    id: Date.now(),
+                    name: name,
+                    price: price,
+                    people: selectedPeople,
+                    quantities: quantities,
+                    useQuantities: enableQuantitiesCheckbox.checked
+                });
+                
+                // Update UI
+                renderDishes();
+                
+                // Close modal
+                document.body.removeChild(modalOverlay);
+            });
+        }
+        
+        function renderDishes() {
+            if (dishes.length === 0) {
+                dishList.innerHTML = '<li class="empty-state">No dishes added yet</li>';
+                return;
+            }
+            
+            dishList.innerHTML = '';
+            dishes.forEach(dish => {
+                const li = document.createElement('li');
+                li.className = 'dish-item';
+                
+                // Get names of people who shared this dish
+                let sharedWith = '';
+                if (dish.useQuantities) {
+                    sharedWith = dish.people.map(personId => {
+                        const person = people.find(p => p.id === personId);
+                        const quantity = dish.quantities[personId];
+                        return person ? `${person.name} (${quantity})` : 'Unknown';
+                    }).join(', ');
+                } else {
+                    sharedWith = dish.people.map(personId => {
+                        const person = people.find(p => p.id === personId);
+                        return person ? person.name : 'Unknown';
+                    }).join(', ');
+                }
+                
+                li.innerHTML = `
+                    <div>
+                        <strong>${dish.name}</strong> - $${dish.price.toFixed(2)} per unit
+                        <div style="font-size: 0.9rem; color: #666;">Shared with: ${sharedWith}</div>
+                        ${dish.useQuantities ? '<div style="font-size: 0.8rem; color: #888;">(Individual quantities enabled)</div>' : ''}
+                    </div>
+                    <button class="danger" data-id="${dish.id}">Remove</button>
+                `;
+                dishList.appendChild(li);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.dish-item button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    removeDish(id);
+                });
+            });
+        }
+        
+        function removeDish(id) {
+            dishes = dishes.filter(dish => dish.id !== id);
+            renderDishes();
+        }
+        
+        // Compute functionality
+        computeBtn.addEventListener('click', computeSplit);
+        
+        function computeSplit() {
+            if (people.length === 0) {
+                alert('Please add at least one person');
+                return;
+            }
+            
+            if (dishes.length === 0) {
+                alert('Please add at least one dish');
+                return;
+            }
+            
+            // Calculate amounts for each person
+            const amounts = {};
+            people.forEach(person => {
+                amounts[person.id] = 0;
+            });
+            
+            // For each dish, split the cost based on quantities or evenly
+            dishes.forEach(dish => {
+                if (dish.useQuantities) {
+                    // Calculate total quantity for this dish
+                    let totalQuantity = 0;
+                    dish.people.forEach(personId => {
+                        totalQuantity += dish.quantities[personId];
+                    });
+                    
+                    // Calculate cost per unit of quantity
+                    const costPerUnit = dish.price / totalQuantity;
+                    
+                    // Assign cost to each person based on their quantity
+                    dish.people.forEach(personId => {
+                        const personQuantity = dish.quantities[personId];
+                        amounts[personId] += costPerUnit * personQuantity;
+                    });
+                } else {
+                    // Split evenly among selected people
+                    const costPerPerson = dish.price / dish.people.length;
+                    dish.people.forEach(personId => {
+                        amounts[personId] += costPerPerson;
+                    });
+                }
+            });
+            
+            // Display results
+            displayResults(amounts);
+        }
+        
+        function displayResults(amounts) {
+            resultList.innerHTML = '';
+            
+            let total = 0;
+            
+            people.forEach(person => {
+                const amount = amounts[person.id];
+                total += amount;
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <span>${person.name}</span>
+                    <span>$${amount.toFixed(2)}</span>
+                `;
+                resultList.appendChild(resultItem);
+            });
+            
+            // Add total
+            const totalItem = document.createElement('div');
+            totalItem.className = 'result-item total';
+            totalItem.innerHTML = `
+                <span>Total</span>
+                <span>$${total.toFixed(2)}</span>
+            `;
+            resultList.appendChild(totalItem);
+            
+            // Show results
+            results.style.display = 'block';
+            
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

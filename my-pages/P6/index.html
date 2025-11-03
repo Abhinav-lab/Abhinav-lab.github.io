@@ -188,6 +188,48 @@
             box-shadow: var(--shadow);
         }
         
+        .restaurant-item {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .restaurant-header {
+            padding: 20px;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .restaurant-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .restaurant-paid-by {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .restaurant-dishes {
+            padding: 20px;
+        }
+        
+        .dish-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--light);
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid var(--success);
+        }
+        
         .empty-state {
             text-align: center;
             padding: 30px;
@@ -505,24 +547,14 @@
             border-left: 4px solid var(--success);
         }
         
-        .bill-header {
+        .dish-input-group {
             display: flex;
-            justify-content: between;
-            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .add-dish-btn {
             margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border);
-        }
-        
-        .bill-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--secondary);
-        }
-        
-        .bill-paid-by {
-            font-size: 0.9rem;
-            color: var(--gray);
         }
         
         @media (max-width: 768px) {
@@ -545,6 +577,10 @@
             .results-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .dish-input-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -552,7 +588,7 @@
     <div class="container">
         <div class="header">
             <h1>Advanced Bill Splitter</h1>
-            <p>Split multiple bills, track payments, and see who owes whom</p>
+            <p>Split bills by restaurant with multiple dishes</p>
         </div>
         
         <div class="content">
@@ -574,26 +610,25 @@
                 </ul>
             </div>
             
-            <!-- Add Bills Section -->
+            <!-- Add Restaurants Section -->
             <div class="section">
                 <div class="section-title">
-                    <span>🧾</span>
-                    <h2>Add Bills</h2>
+                    <span>🏪</span>
+                    <h2>Add Restaurants/Places</h2>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="billName" placeholder="Restaurant or place name">
-                    <input type="number" id="billTotal" placeholder="Total bill amount" min="0" step="0.01">
-                    <select id="paidBy">
+                    <input type="text" id="restaurantName" placeholder="Restaurant or place name">
+                    <select id="restaurantPaidBy">
                         <option value="">Who paid?</option>
                     </select>
-                    <button id="addBillBtn" class="btn btn-primary">
-                        <span>+</span> Add Bill
+                    <button id="addRestaurantBtn" class="btn btn-primary">
+                        <span>+</span> Add Restaurant
                     </button>
                 </div>
-                <div id="billError" class="error"></div>
-                <ul id="billList" class="list">
-                    <li class="empty-state">No bills added yet</li>
-                </ul>
+                <div id="restaurantError" class="error"></div>
+                <div id="restaurantList">
+                    <div class="empty-state">No restaurants added yet</div>
+                </div>
             </div>
             
             <!-- Compute Button -->
@@ -622,8 +657,9 @@
     <script>
         // Data storage
         let people = [];
-        let bills = [];
+        let restaurants = [];
         let currentModalOverlay = null;
+        let currentRestaurantId = null;
         
         // DOM elements
         const personNameInput = document.getElementById('personName');
@@ -631,12 +667,11 @@
         const personList = document.getElementById('personList');
         const personError = document.getElementById('personError');
         
-        const billNameInput = document.getElementById('billName');
-        const billTotalInput = document.getElementById('billTotal');
-        const paidBySelect = document.getElementById('paidBy');
-        const addBillBtn = document.getElementById('addBillBtn');
-        const billList = document.getElementById('billList');
-        const billError = document.getElementById('billError');
+        const restaurantNameInput = document.getElementById('restaurantName');
+        const restaurantPaidBySelect = document.getElementById('restaurantPaidBy');
+        const addRestaurantBtn = document.getElementById('addRestaurantBtn');
+        const restaurantList = document.getElementById('restaurantList');
+        const restaurantError = document.getElementById('restaurantError');
         
         const computeBtn = document.getElementById('computeBtn');
         const results = document.getElementById('results');
@@ -669,8 +704,8 @@
             };
             people.push(newPerson);
             
-            // Update paid by dropdown
-            updatePaidBySelect();
+            // Update paid by dropdowns
+            updatePaidBySelects();
             
             // Clear input and error
             personNameInput.value = '';
@@ -680,13 +715,14 @@
             renderPeople();
         }
         
-        function updatePaidBySelect() {
-            paidBySelect.innerHTML = '<option value="">Who paid?</option>';
+        function updatePaidBySelects() {
+            // Update restaurant paid by select
+            restaurantPaidBySelect.innerHTML = '<option value="">Who paid?</option>';
             people.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.id;
                 option.textContent = person.name;
-                paidBySelect.appendChild(option);
+                restaurantPaidBySelect.appendChild(option);
             });
         }
         
@@ -720,49 +756,156 @@
         
         function removePerson(id) {
             people = people.filter(person => person.id !== id);
-            updatePaidBySelect();
+            updatePaidBySelects();
             renderPeople();
+            renderRestaurants();
         }
         
-        // Add bill functionality
-        addBillBtn.addEventListener('click', addBill);
+        // Add restaurant functionality
+        addRestaurantBtn.addEventListener('click', addRestaurant);
         
-        function addBill() {
-            const name = billNameInput.value.trim();
-            const total = parseFloat(billTotalInput.value);
-            const paidById = parseInt(paidBySelect.value);
+        function addRestaurant() {
+            const name = restaurantNameInput.value.trim();
+            const paidById = parseInt(restaurantPaidBySelect.value);
             
             if (!name) {
-                showError(billError, "Please enter a bill name");
-                return;
-            }
-            
-            if (isNaN(total) || total <= 0) {
-                showError(billError, "Please enter a valid total amount");
+                showError(restaurantError, "Please enter a restaurant name");
                 return;
             }
             
             if (!paidById) {
-                showError(billError, "Please select who paid the bill");
+                showError(restaurantError, "Please select who paid for this restaurant");
                 return;
             }
             
             if (people.length === 0) {
-                showError(billError, "Please add people first");
+                showError(restaurantError, "Please add people first");
                 return;
             }
             
-            // Create modal for selecting people and quantities
-            createBillAssignmentModal(name, total, paidById);
+            // Add restaurant to the list
+            const newRestaurant = {
+                id: Date.now(),
+                name: name,
+                paidBy: paidById,
+                dishes: []
+            };
+            restaurants.push(newRestaurant);
             
             // Clear inputs and error
-            billNameInput.value = '';
-            billTotalInput.value = '';
-            paidBySelect.value = '';
-            billError.textContent = '';
+            restaurantNameInput.value = '';
+            restaurantPaidBySelect.value = '';
+            restaurantError.textContent = '';
+            
+            // Update UI
+            renderRestaurants();
         }
         
-        function createBillAssignmentModal(name, total, paidById) {
+        function renderRestaurants() {
+            if (restaurants.length === 0) {
+                restaurantList.innerHTML = '<div class="empty-state">No restaurants added yet</div>';
+                return;
+            }
+            
+            restaurantList.innerHTML = '';
+            restaurants.forEach(restaurant => {
+                const restaurantElement = document.createElement('div');
+                restaurantElement.className = 'restaurant-item';
+                
+                const paidByName = people.find(p => p.id === restaurant.paidBy)?.name || 'Unknown';
+                const totalAmount = restaurant.dishes.reduce((sum, dish) => sum + dish.price, 0);
+                
+                restaurantElement.innerHTML = `
+                    <div class="restaurant-header">
+                        <div class="restaurant-title">${restaurant.name} - Total: $${totalAmount.toFixed(2)}</div>
+                        <div class="restaurant-paid-by">Paid by: ${paidByName}</div>
+                    </div>
+                    <div class="restaurant-dishes">
+                        <div class="dish-input-group">
+                            <input type="text" id="dish-name-${restaurant.id}" placeholder="Dish name" class="dish-name-input">
+                            <input type="number" id="dish-price-${restaurant.id}" placeholder="Price" min="0" step="0.01" class="dish-price-input">
+                            <button class="btn btn-primary btn-sm add-dish-btn" data-restaurant="${restaurant.id}">
+                                <span>+</span> Add Dish
+                            </button>
+                        </div>
+                        <div id="dishes-list-${restaurant.id}">
+                            ${restaurant.dishes.length === 0 ? 
+                                '<div class="empty-state">No dishes added yet</div>' : 
+                                restaurant.dishes.map(dish => `
+                                    <div class="dish-item">
+                                        <div>
+                                            <strong>${dish.name}</strong> - $${dish.price.toFixed(2)}
+                                            ${dish.useQuantities ? 
+                                                `<div style="font-size: 0.8rem; color: #666;">
+                                                    (${dish.calculationMethod === 'divide' ? 'Divided' : 'Multiplied'})
+                                                </div>` : ''}
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-warning btn-sm edit-dish-btn" data-restaurant="${restaurant.id}" data-dish="${dish.id}">
+                                                ✏️ Edit
+                                            </button>
+                                            <button class="btn btn-danger btn-sm remove-dish-btn" data-restaurant="${restaurant.id}" data-dish="${dish.id}">
+                                                × Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                    </div>
+                `;
+                restaurantList.appendChild(restaurantElement);
+            });
+            
+            // Add event listeners for dish buttons
+            document.querySelectorAll('.add-dish-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const restaurantId = parseInt(this.getAttribute('data-restaurant'));
+                    const dishNameInput = document.getElementById(`dish-name-${restaurantId}`);
+                    const dishPriceInput = document.getElementById(`dish-price-${restaurantId}`);
+                    
+                    const name = dishNameInput.value.trim();
+                    const price = parseFloat(dishPriceInput.value);
+                    
+                    if (!name) {
+                        alert('Please enter a dish name');
+                        return;
+                    }
+                    
+                    if (isNaN(price) || price <= 0) {
+                        alert('Please enter a valid price');
+                        return;
+                    }
+                    
+                    // Create modal for dish assignment
+                    createDishAssignmentModal(restaurantId, name, price);
+                    
+                    // Clear inputs
+                    dishNameInput.value = '';
+                    dishPriceInput.value = '';
+                });
+            });
+            
+            document.querySelectorAll('.edit-dish-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const restaurantId = parseInt(this.getAttribute('data-restaurant'));
+                    const dishId = parseInt(this.getAttribute('data-dish'));
+                    editDish(restaurantId, dishId);
+                });
+            });
+            
+            document.querySelectorAll('.remove-dish-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const restaurantId = parseInt(this.getAttribute('data-restaurant'));
+                    const dishId = parseInt(this.getAttribute('data-dish'));
+                    removeDish(restaurantId, dishId);
+                });
+            });
+        }
+        
+        function createDishAssignmentModal(restaurantId, name, price) {
+            currentRestaurantId = restaurantId;
+            
             // Remove any existing modal first
             if (currentModalOverlay) {
                 document.body.removeChild(currentModalOverlay);
@@ -776,16 +919,13 @@
             const modal = document.createElement('div');
             modal.className = 'modal';
             
-            const paidByName = people.find(p => p.id === paidById)?.name || 'Unknown';
-            
             modal.innerHTML = `
                 <div class="modal-header">
-                    <div class="modal-title">Split Bill: "${name}"</div>
+                    <div class="modal-title">Assign Dish: "${name}"</div>
                     <button class="modal-close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>Total Bill: $${total.toFixed(2)}</strong></p>
-                    <p><strong>Paid by: ${paidByName}</strong></p>
+                    <p><strong>Dish Price: $${price.toFixed(2)}</strong></p>
                     
                     <div class="toggle-container">
                         <label class="switch">
@@ -815,12 +955,12 @@
                             </div>
                         </div>
                         <div class="calculation-preview" id="calculationPreview">
-                            <strong>Divide Method:</strong> Total amount ($${total.toFixed(2)}) ÷ Total quantities × Individual quantity
+                            <strong>Divide Method:</strong> Total amount ($${price.toFixed(2)}) ÷ Total quantities × Individual quantity
                         </div>
                     </div>
                     
                     <div id="assignmentSection">
-                        <p><strong>Select who shared this bill:</strong></p>
+                        <p><strong>Select who shared this dish:</strong></p>
                         <div id="assignmentCheckboxes"></div>
                     </div>
                     
@@ -831,7 +971,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="cancelAssignment" class="btn btn-danger">Cancel</button>
-                    <button id="saveAssignment" class="btn btn-success">Save Bill</button>
+                    <button id="saveAssignment" class="btn btn-success">Save Dish</button>
                 </div>
             `;
             
@@ -894,12 +1034,12 @@
                         });
                         
                         if (totalQuantity > 0) {
-                            const costPerUnit = total / totalQuantity;
+                            const costPerUnit = price / totalQuantity;
                             cost = costPerUnit * quantity;
                         }
                     } else {
                         // Multiply method
-                        cost = total * quantity;
+                        cost = price * quantity;
                     }
                     
                     document.getElementById(`cost-${person.id}`).textContent = `$${cost.toFixed(2)}`;
@@ -957,11 +1097,11 @@
                     // Update preview text
                     if (calculationMethod === 'divide') {
                         calculationPreview.innerHTML = `
-                            <strong>Divide Method:</strong> Total amount ($${total.toFixed(2)}) ÷ Total quantities × Individual quantity
+                            <strong>Divide Method:</strong> Total amount ($${price.toFixed(2)}) ÷ Total quantities × Individual quantity
                         `;
                     } else {
                         calculationPreview.innerHTML = `
-                            <strong>Multiply Method:</strong> Individual quantity × Price per unit ($${total.toFixed(2)})
+                            <strong>Multiply Method:</strong> Individual quantity × Price per unit ($${price.toFixed(2)})
                         `;
                     }
                     
@@ -996,11 +1136,13 @@
             document.getElementById('cancelAssignment').addEventListener('click', function() {
                 document.body.removeChild(currentModalOverlay);
                 currentModalOverlay = null;
+                currentRestaurantId = null;
             });
             
             document.querySelector('.modal-close').addEventListener('click', function() {
                 document.body.removeChild(currentModalOverlay);
                 currentModalOverlay = null;
+                currentRestaurantId = null;
             });
             
             document.getElementById('saveAssignment').addEventListener('click', function() {
@@ -1026,93 +1168,93 @@
                     return;
                 }
                 
-                // Add bill to the list
-                bills.push({
-                    id: Date.now(),
-                    name: name,
-                    total: total,
-                    paidBy: paidById,
-                    people: selectedPeople,
-                    quantities: quantities,
-                    useQuantities: enableQuantitiesCheckbox.checked,
-                    calculationMethod: calculationMethod
-                });
+                // Find the restaurant and add dish
+                const restaurant = restaurants.find(r => r.id === currentRestaurantId);
+                if (restaurant) {
+                    restaurant.dishes.push({
+                        id: Date.now(),
+                        name: name,
+                        price: price,
+                        people: selectedPeople,
+                        quantities: quantities,
+                        useQuantities: enableQuantitiesCheckbox.checked,
+                        calculationMethod: calculationMethod
+                    });
+                }
                 
                 // Update UI
-                renderBills();
+                renderRestaurants();
                 
                 // Close modal
                 document.body.removeChild(currentModalOverlay);
                 currentModalOverlay = null;
+                currentRestaurantId = null;
             });
             
             // Initial cost display update
             updateCostDisplay();
         }
         
-        function renderBills() {
-            if (bills.length === 0) {
-                billList.innerHTML = '<li class="empty-state">No bills added yet</li>';
-                return;
-            }
+        function editDish(restaurantId, dishId) {
+            const restaurant = restaurants.find(r => r.id === restaurantId);
+            if (!restaurant) return;
             
-            billList.innerHTML = '';
-            bills.forEach(bill => {
-                const li = document.createElement('li');
-                li.className = 'list-item';
-                
-                // Get names of people who shared this bill
-                let sharedWith = '';
-                if (bill.useQuantities) {
-                    sharedWith = bill.people.map(personId => {
-                        const person = people.find(p => p.id === personId);
-                        const quantity = bill.quantities[personId];
-                        return person ? `${person.name} (${quantity})` : 'Unknown';
-                    }).join(', ');
-                } else {
-                    sharedWith = bill.people.map(personId => {
-                        const person = people.find(p => p.id === personId);
-                        return person ? person.name : 'Unknown';
-                    }).join(', ');
+            const dish = restaurant.dishes.find(d => d.id === dishId);
+            if (!dish) return;
+            
+            // Remove the dish first
+            removeDish(restaurantId, dishId, false);
+            
+            // Create modal with existing dish data
+            createDishAssignmentModal(restaurantId, dish.name, dish.price);
+            
+            // Pre-fill the modal with existing data
+            setTimeout(() => {
+                // Set quantities enabled if it was enabled before
+                if (dish.useQuantities) {
+                    document.getElementById('enableQuantities').checked = true;
+                    document.getElementById('enableQuantities').dispatchEvent(new Event('change'));
+                    
+                    // Set calculation method
+                    document.querySelectorAll('.method-btn').forEach(btn => {
+                        if (btn.getAttribute('data-method') === dish.calculationMethod) {
+                            btn.click();
+                        }
+                    });
+                    
+                    // Set quantities for each person
+                    dish.people.forEach(personId => {
+                        const quantity = dish.quantities[personId];
+                        document.getElementById(`qty-value-${personId}`).textContent = quantity;
+                    });
+                    
+                    // Update cost display
+                    if (typeof updateCostDisplay === 'function') {
+                        updateCostDisplay();
+                    }
                 }
                 
-                const paidByName = people.find(p => p.id === bill.paidBy)?.name || 'Unknown';
-                const methodText = bill.useQuantities ? 
-                    `(${bill.calculationMethod === 'divide' ? 'Divided' : 'Multiplied'})` : '';
-                
-                li.innerHTML = `
-                    <div>
-                        <div class="bill-header">
-                            <div class="bill-title">${bill.name} - $${bill.total.toFixed(2)} ${methodText}</div>
-                            <div class="bill-paid-by">Paid by: ${paidByName}</div>
-                        </div>
-                        <div style="font-size: 0.9rem; color: #666;">Shared with: ${sharedWith}</div>
-                        ${bill.useQuantities ? 
-                            `<div style="font-size: 0.8rem; color: #888; margin-top: 3px;">
-                                ${bill.calculationMethod === 'divide' ? 
-                                    'Total amount divided by quantities' : 
-                                    'Quantities multiplied by price'}
-                            </div>` : ''}
-                    </div>
-                    <button class="btn btn-danger btn-sm" data-id="${bill.id}">
-                        <span>×</span> Remove
-                    </button>
-                `;
-                billList.appendChild(li);
-            });
-            
-            // Add event listeners to remove buttons
-            document.querySelectorAll('.list-item button').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = parseInt(this.getAttribute('data-id'));
-                    removeBill(id);
+                // Set checkboxes
+                document.querySelectorAll('#assignmentCheckboxes input').forEach(checkbox => {
+                    checkbox.checked = dish.people.includes(parseInt(checkbox.value));
+                    checkbox.dispatchEvent(new Event('change'));
                 });
-            });
+            }, 100);
         }
         
-        function removeBill(id) {
-            bills = bills.filter(bill => bill.id !== id);
-            renderBills();
+        function removeDish(restaurantId, dishId, updateUI = true) {
+            const restaurant = restaurants.find(r => r.id === restaurantId);
+            if (restaurant) {
+                restaurant.dishes = restaurant.dishes.filter(d => d.id !== dishId);
+                if (updateUI) {
+                    renderRestaurants();
+                }
+            }
+        }
+        
+        function removeRestaurant(id) {
+            restaurants = restaurants.filter(restaurant => restaurant.id !== id);
+            renderRestaurants();
         }
         
         // Compute functionality
@@ -1124,8 +1266,8 @@
                 return;
             }
             
-            if (bills.length === 0) {
-                alert('Please add at least one bill');
+            if (restaurants.length === 0) {
+                alert('Please add at least one restaurant');
                 return;
             }
             
@@ -1138,41 +1280,44 @@
                 payments[person.id] = 0;
             });
             
-            // For each bill, split the cost based on calculation method
-            bills.forEach(bill => {
-                // Track who paid
-                payments[bill.paidBy] += bill.total;
+            // For each restaurant and each dish, split the cost
+            restaurants.forEach(restaurant => {
+                // Track who paid for the restaurant
+                payments[restaurant.paidBy] += restaurant.dishes.reduce((sum, dish) => sum + dish.price, 0);
                 
-                if (bill.useQuantities) {
-                    if (bill.calculationMethod === 'divide') {
-                        // Calculate total quantity for this bill
-                        let totalQuantity = 0;
-                        bill.people.forEach(personId => {
-                            totalQuantity += bill.quantities[personId];
-                        });
-                        
-                        // Calculate cost per unit of quantity
-                        const costPerUnit = bill.total / totalQuantity;
-                        
-                        // Assign cost to each person based on their quantity
-                        bill.people.forEach(personId => {
-                            const personQuantity = bill.quantities[personId];
-                            amounts[personId] += costPerUnit * personQuantity;
-                        });
+                // Process each dish in the restaurant
+                restaurant.dishes.forEach(dish => {
+                    if (dish.useQuantities) {
+                        if (dish.calculationMethod === 'divide') {
+                            // Calculate total quantity for this dish
+                            let totalQuantity = 0;
+                            dish.people.forEach(personId => {
+                                totalQuantity += dish.quantities[personId];
+                            });
+                            
+                            // Calculate cost per unit of quantity
+                            const costPerUnit = dish.price / totalQuantity;
+                            
+                            // Assign cost to each person based on their quantity
+                            dish.people.forEach(personId => {
+                                const personQuantity = dish.quantities[personId];
+                                amounts[personId] += costPerUnit * personQuantity;
+                            });
+                        } else {
+                            // Multiply method: Each quantity multiplied by the price
+                            dish.people.forEach(personId => {
+                                const personQuantity = dish.quantities[personId];
+                                amounts[personId] += dish.price * personQuantity;
+                            });
+                        }
                     } else {
-                        // Multiply method: Each quantity multiplied by the price
-                        bill.people.forEach(personId => {
-                            const personQuantity = bill.quantities[personId];
-                            amounts[personId] += bill.total * personQuantity;
+                        // Split evenly among selected people
+                        const costPerPerson = dish.price / dish.people.length;
+                        dish.people.forEach(personId => {
+                            amounts[personId] += costPerPerson;
                         });
                     }
-                } else {
-                    // Split evenly among selected people
-                    const costPerPerson = bill.total / bill.people.length;
-                    bill.people.forEach(personId => {
-                        amounts[personId] += costPerPerson;
-                    });
-                }
+                });
             });
             
             // Calculate net amounts (payments - amounts owed)
@@ -1199,7 +1344,7 @@
                 totalPayments += payment;
                 
                 const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
+                resultItem.className = `result-item ${netAmounts[person.id] >= 0 ? 'owed-positive' : 'owed-negative'}`;
                 resultItem.innerHTML = `
                     <div>
                         <strong>${person.name}</strong>

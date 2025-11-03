@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Splitter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .step {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            color: #3498db;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .step-number {
+            background-color: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background-color: #f0f8ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .person-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .person-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .person-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 10px;
+        }
+
+        .dish-list {
+            margin-bottom: 20px;
+        }
+
+        .dish-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .dish-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .dish-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .dish-price {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .split-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .split-option {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .split-option input {
+            width: 50px;
+            margin-left: 5px;
+            padding: 3px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .person-summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .person-summary-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .person-dishes {
+            margin-top: 10px;
+        }
+
+        .person-dish {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #3498db;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .add-person-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-person-form input {
+            flex: 1;
+        }
+
+        .demo-bill {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px dashed #3498db;
+        }
+
+        .demo-bill h3 {
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        .demo-bill ul {
+            list-style-type: none;
+        }
+
+        .demo-bill li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .demo-bill .total {
+            font-weight: bold;
+            margin-top: 10px;
+            border-top: 1px solid #3498db;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bill Splitter</h1>
+            <p class="description">Scan your bill, add people, and split dishes easily</p>
+        </header>
+
+        <!-- Step 1: Upload Bill -->
+        <div class="step active" id="step1">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                <h2>Upload Bill</h2>
+            </div>
+            <p>Upload a picture of your restaurant bill or use our demo bill to try the app.</p>
+            
+            <div class="demo-bill">
+                <h3>Demo Bill</h3>
+                <ul>
+                    <li>Margherita Pizza <span>$12.00</span></li>
+                    <li>Caesar Salad <span>$8.50</span></li>
+                    <li>Pasta Carbonara <span>$14.00</span></li>
+                    <li>Garlic Bread <span>$5.00</span></li>
+                    <li>Soft Drinks (x2) <span>$4.00</span></li>
+                    <li class="total">Total <span>$43.50</span></li>
+                </ul>
+            </div>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <p>Click to upload bill image or drag and drop</p>
+                <p class="small">(For demo purposes, we'll use the sample bill above)</p>
+            </div>
+            
+            <input type="file" id="billUpload" accept="image/*" class="hidden">
+            
+            <div class="navigation">
+                <div></div> <!-- Empty div for spacing -->
+                <button class="btn" id="nextToStep2">Use Demo Bill & Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Add People -->
+        <div class="step" id="step2">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                <h2>Add People</h2>
+            </div>
+            <p>Add all the people who will be splitting the bill.</p>
+            
+            <div class="add-person-form">
+                <input type="text" id="personName" placeholder="Enter person's name">
+                <button class="btn" id="addPerson">Add Person</button>
+            </div>
+            
+            <div class="person-list" id="personList">
+                <!-- People will be added here dynamically -->
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="backToStep1">Back</button>
+                <button class="btn" id="nextToStep3">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Split Dishes -->
+        <div class="step" id="step3">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                <h2>Split Dishes</h2>
+            </div>
+            <p>For each dish, specify who had it and in what quantity.</p>
+            
+            <div class="dish-list" id="dishList">
+                <!-- Dishes will be added here dynamically -->
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="backToStep2">Back</button>
+                <button class="btn" id="nextToStep4">Calculate Split</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Results -->
+        <div class="step" id="step4">
+            <div class="step-title">
+                <div class="step-number">4</div>
+                <h2>Bill Split Results</h2>
+            </div>
+            <p>Here's how the bill should be split:</p>
+            
+            <div class="results" id="results">
+                <!-- Results will be added here dynamically -->
+            </div>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="backToStep3">Back</button>
+                <button class="btn btn-success" id="startOver">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo bill data
+        const demoBill = [
+            { name: "Margherita Pizza", price: 12.00 },
+            { name: "Caesar Salad", price: 8.50 },
+            { name: "Pasta Carbonara", price: 14.00 },
+            { name: "Garlic Bread", price: 5.00 },
+            { name: "Soft Drinks", price: 4.00, quantity: 2 }
+        ];
+
+        // Global variables
+        let people = [];
+        let dishes = [...demoBill];
+        let splits = {};
+
+        // DOM elements
+        const steps = document.querySelectorAll('.step');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+        
+        const nextToStep2Btn = document.getElementById('nextToStep2');
+        const nextToStep3Btn = document.getElementById('nextToStep3');
+        const nextToStep4Btn = document.getElementById('nextToStep4');
+        
+        const backToStep1Btn = document.getElementById('backToStep1');
+        const backToStep2Btn = document.getElementById('backToStep2');
+        const backToStep3Btn = document.getElementById('backToStep3');
+        
+        const startOverBtn = document.getElementById('startOver');
+        const addPersonBtn = document.getElementById('addPerson');
+        const personNameInput = document.getElementById('personName');
+        const personList = document.getElementById('personList');
+        const dishList = document.getElementById('dishList');
+        const results = document.getElementById('results');
+
+        // Navigation functions
+        function showStep(stepElement) {
+            steps.forEach(step => step.classList.remove('active'));
+            stepElement.classList.add('active');
+        }
+
+        // Step 1 to Step 2
+        nextToStep2Btn.addEventListener('click', () => {
+            showStep(step2);
+        });
+
+        // Step 2 to Step 3
+        nextToStep3Btn.addEventListener('click', () => {
+            if (people.length === 0) {
+                alert('Please add at least one person');
+                return;
+            }
+            renderDishes();
+            showStep(step3);
+        });
+
+        // Step 3 to Step 4
+        nextToStep4Btn.addEventListener('click', () => {
+            calculateSplit();
+            showStep(step4);
+        });
+
+        // Back navigation
+        backToStep1Btn.addEventListener('click', () => showStep(step1));
+        backToStep2Btn.addEventListener('click', () => showStep(step2));
+        backToStep3Btn.addEventListener('click', () => showStep(step3));
+
+        // Start over
+        startOverBtn.addEventListener('click', () => {
+            people = [];
+            splits = {};
+            personList.innerHTML = '';
+            results.innerHTML = '';
+            personNameInput.value = '';
+            showStep(step1);
+        });
+
+        // Add person functionality
+        addPersonBtn.addEventListener('click', () => {
+            const name = personNameInput.value.trim();
+            if (name) {
+                addPerson(name);
+                personNameInput.value = '';
+            }
+        });
+
+        personNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addPersonBtn.click();
+            }
+        });
+
+        function addPerson(name) {
+            const id = 'person-' + Date.now();
+            people.push({ id, name });
+            renderPeople();
+        }
+
+        function renderPeople() {
+            personList.innerHTML = '';
+            people.forEach(person => {
+                const personCard = document.createElement('div');
+                personCard.className = 'person-card';
+                personCard.innerHTML = `
+                    <div class="person-avatar">${person.name.charAt(0).toUpperCase()}</div>
+                    <div class="person-name">${person.name}</div>
+                `;
+                personList.appendChild(personCard);
+            });
+        }
+
+        // Render dishes for splitting
+        function renderDishes() {
+            dishList.innerHTML = '';
+            dishes.forEach((dish, index) => {
+                const dishItem = document.createElement('div');
+                dishItem.className = 'dish-item';
+                
+                const totalQuantity = dish.quantity || 1;
+                const pricePerUnit = dish.price / totalQuantity;
+                
+                dishItem.innerHTML = `
+                    <div class="dish-header">
+                        <div class="dish-name">${dish.name}</div>
+                        <div class="dish-price">$${dish.price.toFixed(2)}</div>
+                    </div>
+                    <div class="split-options" id="split-options-${index}">
+                        <!-- Split options will be added dynamically -->
+                    </div>
+                `;
+                
+                dishList.appendChild(dishItem);
+                
+                // Add split options for each person
+                const splitOptions = document.getElementById(`split-options-${index}`);
+                people.forEach(person => {
+                    const splitOption = document.createElement('div');
+                    splitOption.className = 'split-option';
+                    splitOption.innerHTML = `
+                        <span>${person.name}:</span>
+                        <input type="number" min="0" max="${totalQuantity}" value="0" 
+                               data-dish="${index}" data-person="${person.id}">
+                    `;
+                    splitOptions.appendChild(splitOption);
+                });
+            });
+        }
+
+        // Calculate the split
+        function calculateSplit() {
+            // Reset splits
+            splits = {};
+            people.forEach(person => {
+                splits[person.id] = {
+                    name: person.name,
+                    dishes: [],
+                    total: 0
+                };
+            });
+            
+            // Calculate splits for each dish
+            dishes.forEach((dish, dishIndex) => {
+                const totalQuantity = dish.quantity || 1;
+                const pricePerUnit = dish.price / totalQuantity;
+                
+                // Get all inputs for this dish
+                const inputs = document.querySelectorAll(`input[data-dish="${dishIndex}"]`);
+                let allocatedQuantity = 0;
+                
+                inputs.forEach(input => {
+                    const quantity = parseInt(input.value) || 0;
+                    const personId = input.getAttribute('data-person');
+                    
+                    if (quantity > 0) {
+                        const amount = quantity * pricePerUnit;
+                        splits[personId].dishes.push({
+                            name: dish.name,
+                            quantity: quantity,
+                            amount: amount
+                        });
+                        splits[personId].total += amount;
+                        allocatedQuantity += quantity;
+                    }
+                });
+                
+                // Handle unallocated quantity
+                if (allocatedQuantity < totalQuantity) {
+                    const unallocatedQuantity = totalQuantity - allocatedQuantity;
+                    const unallocatedAmount = unallocatedQuantity * pricePerUnit;
+                    
+                    // Distribute unallocated amount equally among all people
+                    const perPersonAmount = unallocatedAmount / people.length;
+                    people.forEach(person => {
+                        splits[person.id].total += perPersonAmount;
+                        // Add to dishes list if not already there
+                        const existingDish = splits[person.id].dishes.find(d => d.name === dish.name);
+                        if (existingDish) {
+                            existingDish.amount += perPersonAmount;
+                        } else {
+                            splits[person.id].dishes.push({
+                                name: dish.name,
+                                quantity: 0, // This is for shared items
+                                amount: perPersonAmount
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Render results
+            renderResults();
+        }
+
+        // Render the results
+        function renderResults() {
+            results.innerHTML = '';
+            let grandTotal = 0;
+            
+            people.forEach(person => {
+                const personSummary = document.createElement('div');
+                personSummary.className = 'person-summary';
+                
+                let dishesHTML = '';
+                splits[person.id].dishes.forEach(dish => {
+                    dishesHTML += `
+                        <div class="person-dish">
+                            <span>${dish.name} ${dish.quantity > 0 ? `(${dish.quantity})` : ''}</span>
+                            <span>$${dish.amount.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+                
+                personSummary.innerHTML = `
+                    <div class="person-summary-header">
+                        <span>${person.name}</span>
+                        <span>$${splits[person.id].total.toFixed(2)}</span>
+                    </div>
+                    <div class="person-dishes">
+                        ${dishesHTML}
+                    </div>
+                `;
+                
+                results.appendChild(personSummary);
+                grandTotal += splits[person.id].total;
+            });
+            
+            const totalElement = document.createElement('div');
+            totalElement.className = 'total-amount';
+            totalElement.textContent = `Grand Total: $${grandTotal.toFixed(2)}`;
+            results.appendChild(totalElement);
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // For demo purposes, we'll pre-add some people
+            addPerson('Alice');
+            addPerson('Bob');
+            addPerson('Charlie');
+        });
+    </script>
+</body>
+</html>
